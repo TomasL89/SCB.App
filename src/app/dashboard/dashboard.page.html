@@ -1,0 +1,36 @@
+<ion-content>
+  <ion-card (click)="openChartModal()">
+    <ion-card-content>
+      <div class="ion-text-center">{{boilerTemperature}} °C</div>
+      <ion-item lines="none"> </ion-item>
+      <ion-icon
+        name="expand-outline"
+      ></ion-icon>
+    </ion-card-content>
+  </ion-card>
+  <ion-card (click)="openProfileModal()">
+    <ion-card-content>
+      <div class="profile-item">
+        <p class="profile-label">Profile</p>
+        <p>{{currentProfile.name}}</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Boiler Temperature</p>
+        <p>{{currentProfile.boilerTemperature}} °C</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Pump Pressure</p>
+        <p>{{currentProfile.pumpPressure}} Bar</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Pre Infusion Time</p>
+        <p>{{currentProfile.preInfusionTime}} s</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Shot Time</p>
+        <p>{{currentProfile.shotTime}} s</p>
+      </div>
+      <ion-icon name="enter-outline"></ion-icon>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

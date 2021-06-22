@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-icon name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left;"></ion-icon>
+</ion-header>
+
+<ion-content>
+  <ion-card routerLink="../edit">
+    <ion-card-content>
+      <div class="profile-item">
+        <p class="profile-label">Profile</p>
+        <p>{{currentProfile.name}}</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Boiler Temperature</p>
+        <p>{{currentProfile.boilerTemperature}} °C</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Pump Pressure</p>
+        <p>{{currentProfile.pumpPressure}} Bar</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Pre Infusion Time</p>
+        <p>{{currentProfile.preInfusionTime}} s</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">Shot Time</p>
+        <p>{{currentProfile.shotTime}} s</p>
+      </div>
+
+      <ion-icon name="pencil-outline"></ion-icon>
+    </ion-card-content>
+  </ion-card>
+  <ion-card >
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>Profile Tutorial <ion-icon name="book-outline" slot="end"></ion-icon> </p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card >
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>New Profile <ion-icon name="create-outline" slot="end"></ion-icon> </p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card >
+    <ion-card-content>
+      <div class="ion-text-center">
+        Library
+        <ion-icon name="library-outline" slot="end"></ion-icon>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
