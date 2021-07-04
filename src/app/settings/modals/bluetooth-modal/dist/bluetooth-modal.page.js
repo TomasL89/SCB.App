@@ -9,7 +9,7 @@ exports.__esModule = true;
 exports.BluetoothModalPage = void 0;
 var core_1 = require("@angular/core");
 var BluetoothModalPage = /** @class */ (function () {
-    function BluetoothModalPage(modalController) {
+    function BluetoothModalPage(modalController, bluetoothService) {
         this.modalController = modalController;
         this.foundDevice = true;
     }

@@ -7,10 +7,13 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ProfileService } from './profile/profile.service';
+import { BluetoothService } from './settings/bluetooth/bluetooth.service';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,8 +26,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatExpansionModule ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ProfileService],
+    MatExpansionModule,
+    BluetoothLE],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ProfileService, BluetoothService, BluetoothLE],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

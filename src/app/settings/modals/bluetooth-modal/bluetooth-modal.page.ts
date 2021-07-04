@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { BluetoothService } from '../../bluetooth/bluetooth.service';
 
 @Component({
   selector: 'app-bluetooth-modal',
@@ -9,7 +10,7 @@ import { ModalController } from '@ionic/angular';
 export class BluetoothModalPage implements OnInit {
   foundDevice: boolean = true;
 
-  constructor(private modalController: ModalController) { }
+  constructor(private modalController: ModalController, bluetoothService: BluetoothService) { }
 
   ngOnInit() {
   }
