@@ -9,7 +9,7 @@
     </ion-card-content>
   </ion-card>
   <ion-card (click)="openProfileModal()">
-    <ion-card-content>
+    <ion-card-content *ngIf="currentProfile">
       <div class="profile-item">
         <p class="profile-label">Profile</p>
         <p>{{currentProfile.name}}</p>
@@ -29,6 +29,12 @@
       <div class="profile-item">
         <p class="profile-label">Shot Time</p>
         <p>{{currentProfile.shotTime}} s</p>
+      </div>
+      <ion-icon name="enter-outline"></ion-icon>
+    </ion-card-content>
+    <ion-card-content *ngIf="!currentProfile">
+      <div class="profile-item">
+        <p>Create a new profile</p>
       </div>
       <ion-icon name="enter-outline"></ion-icon>
     </ion-card-content>

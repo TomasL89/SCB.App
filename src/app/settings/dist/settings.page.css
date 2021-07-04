@@ -1,0 +1,11 @@
+ion-icon {
+  color: #000000;
+  font-size: 30px;
+  float: right;
+  padding-bottom: 10px;
+}
+
+.settings-item {
+  text-align: center;
+  padding: 5px;
+}

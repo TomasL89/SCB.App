@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "smart-coffee-app",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

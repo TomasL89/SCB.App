@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Profile } from '../common/profiles/profile.model';
+import { Subscription } from 'rxjs';
+import { Profile } from '../profile/profile.model';
+import { ProfileService } from '../profile/profile.service';
 import { ProfileModalPage } from './profile-modal/profile-modal.page';
 
 @Component({
@@ -8,19 +10,29 @@ import { ProfileModalPage } from './profile-modal/profile-modal.page';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
-export class DashboardPage implements OnInit {
+export class DashboardPage implements OnInit, OnDestroy {
   boilerTemperature: number;
   currentProfile: Profile;
-
+  profileSubscription: Subscription;
   private temperature: number;
 
-  constructor(public modalController: ModalController) {}
+  constructor(public modalController: ModalController, private profileService: ProfileService) {}
+
 
   ngOnInit() {
-    this.currentProfile = new Profile('Single Origin 18gram', 85, 9, 10, 30);
+    //this.currentProfile = new Profile('Single Origin 18gram', 85, 9, 10, 30, true);
 
     this.temperature = 85;
     this.boilerTemperature = this.temperature;
+
+    this.profileSubscription = this.profileService.currentProfile.subscribe(profile => {
+      this.currentProfile = profile;
+    }, (error => {
+      console.error(error);
+    }));
+  }
+
+  ngOnDestroy(): void {
   }
 
   openChartModal() {

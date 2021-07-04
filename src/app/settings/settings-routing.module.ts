@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: SettingsPage
+  },
+  {
+    path: 'bluetooth-modal',
+    loadChildren: () => import('./modals/bluetooth-modal/bluetooth-modal.module').then( m => m.BluetoothModalPageModule)
   }
 ];
 

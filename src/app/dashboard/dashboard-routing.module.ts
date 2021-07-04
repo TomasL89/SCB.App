@@ -14,7 +14,7 @@ const routes: Routes = [
   },
   {
     path: 'edit',
-    loadChildren: () => import('./edit/edit.module').then( m => m.EditPageModule)
+    loadChildren: () => import('./profile-modal/edit/edit.module').then( m => m.EditPageModule)
   }
 ];
 

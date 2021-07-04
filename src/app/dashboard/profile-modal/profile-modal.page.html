@@ -1,49 +1,25 @@
 <ion-header>
-  <ion-icon name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left;"></ion-icon>
+  <ion-icon *ngIf="!isEditMode" name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left;"></ion-icon>
+  <ion-icon *ngIf="isEditMode" name="close" (click)="enableEditMode()" class="ion-padding" style="float: left"></ion-icon>
+  <ion-icon *ngIf="isEditMode" name="save-outline" (click)="saveProfile()"  class="ion-padding" style="float: right;"></ion-icon>
 </ion-header>
 
 <ion-content>
-  <ion-card routerLink="../edit">
-    <ion-card-content>
-      <div class="profile-item">
-        <p class="profile-label">Profile</p>
-        <p>{{currentProfile.name}}</p>
-      </div>
-      <div class="profile-item">
-        <p class="profile-label">Boiler Temperature</p>
-        <p>{{currentProfile.boilerTemperature}} °C</p>
-      </div>
-      <div class="profile-item">
-        <p class="profile-label">Pump Pressure</p>
-        <p>{{currentProfile.pumpPressure}} Bar</p>
-      </div>
-      <div class="profile-item">
-        <p class="profile-label">Pre Infusion Time</p>
-        <p>{{currentProfile.preInfusionTime}} s</p>
-      </div>
-      <div class="profile-item">
-        <p class="profile-label">Shot Time</p>
-        <p>{{currentProfile.shotTime}} s</p>
-      </div>
-
-      <ion-icon name="pencil-outline"></ion-icon>
-    </ion-card-content>
-  </ion-card>
-  <ion-card >
-    <ion-card-content>
+  <!-- <ion-card *ngIf="!isEditMode && !isLibraryMode">
+    <ion-card-content >
       <div class="ion-text-center">
         <p>Profile Tutorial <ion-icon name="book-outline" slot="end"></ion-icon> </p>
       </div>
     </ion-card-content>
-  </ion-card>
-  <ion-card >
+  </ion-card> -->
+  <ion-card (click)="enableEditMode()" *ngIf="!isEditMode && !isLibraryMode">
     <ion-card-content>
       <div class="ion-text-center">
         <p>New Profile <ion-icon name="create-outline" slot="end"></ion-icon> </p>
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card >
+  <ion-card (click)="enableLibraryMode()" *ngIf="!isEditMode && !isLibraryMode">
     <ion-card-content>
       <div class="ion-text-center">
         Library
@@ -51,4 +27,107 @@
       </div>
     </ion-card-content>
   </ion-card>
+
+  <form [formGroup]="profileForm" *ngIf="isEditMode">
+    <ion-card style="height: 60px;">
+      <ion-item lines="none" class="ion-text-center">
+        <ion-label  position="stacked">Profile Name</ion-label>
+        <ion-input clearInput formControlName="name" placeholder="New profile" type="text" style="color: gray; font-size: small;" required></ion-input>
+      </ion-item>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title style="padding-left: 20%">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Boiler Temperature</ion-label>
+              <ion-input formControlName="boilerTemperature" value="{{boiler.value}} ℃" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ion-range min=80 max=100 step=1 #boiler>
+          <ion-icon slot="start" size="small" name="thermometer"></ion-icon>
+          <ion-icon slot="end" name="thermometer"></ion-icon>
+        </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title style="padding-left: 20%">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Pump Pressure</ion-label>
+              <ion-input formControlName="pumpPressure" value="{{pump.value}} Bar" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ion-range min=4 max=14 step=1 #pump>
+          <ion-icon slot="start"name="remove"></ion-icon>
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title style="padding-left: 20%;">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Pre-Infusion</ion-label>
+              <ion-input formControlName="preInfusionTime" value="{{preInfusion.value}} s" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <ion-range min=0 max=35 step=1 #preInfusion>
+          <ion-icon slot="start"name="remove"></ion-icon>
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title style="padding-left: 20%;">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Shot Time</ion-label>
+              <ion-input formControlName="shotTime" value="{{shot.value}} s" readonly style="color: gray; font-size: small;" required></ion-input>
+            </ion-item>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+          <ion-range min=1 max=60 step=1 #shot>
+            <ion-icon slot="start"name="remove"></ion-icon>
+            <ion-icon slot="end" name="add"></ion-icon>
+          </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title style="padding-left: 20%;">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Set as current profile</ion-label>
+              <ion-input formControlName="shotTime" value="{{toggle.checked}}" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ion-toggle #toggle style="padding-left: 40%;"></ion-toggle>
+      </mat-expansion-panel>
+    </ion-card>
+  </form>
+
+<ion-list *ngIf="isLibraryMode">
+  <ion-item-sliding *ngFor="let profile of profiles">
+    <ion-item-options side="end">
+      <ion-item-option color="dark" (click)="deleteProfile(profile.id)"><ion-icon name="trash" style="color: white;"></ion-icon></ion-item-option>
+      <ion-item-option color="light" (click)="editProfile(profile.id)"><ion-icon name="create"></ion-icon></ion-item-option>
+    </ion-item-options>
+    <ion-item (click)="selectProfile(profile.id)">
+      <ion-label>
+        <h2>{{profile.name}}</h2>
+        <p style="font-size: small;">Boiler {{profile.boilerTemperature}}°C | Pump {{profile.pumpPressure}} Bar | Pre-infusion {{profile.preInfusionTime}} s | Shot {{profile.shotTime}} s</p>
+      </ion-label>
+    </ion-item>
+  </ion-item-sliding>
+</ion-list>
+
 </ion-content>

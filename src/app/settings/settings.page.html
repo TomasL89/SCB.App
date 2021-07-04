@@ -1,9 +1,44 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>settings</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-
+  <ion-card (click)="openBluetoothModal()">
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>Smart Coffee Device <ion-icon name="bluetooth-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>Firmware V{{firmwareVersion | number : '1.1-1'}} <ion-icon name="hardware-chip-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>App V{{appVersion | number : '1.1-1'}} <ion-icon name="square-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>Cloud/Local <ion-icon name="server-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>Power <ion-icon name="power-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>About <ion-icon name="information-circle-outline" slot="end"></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
