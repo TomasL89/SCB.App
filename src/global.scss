@@ -28,3 +28,7 @@
 ion-card {
   border-radius: 20px;
 }
+
+ion-app{
+  margin-top: env(safe-area-inset-top);
+  }

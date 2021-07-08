@@ -1,8 +1,8 @@
-<ion-header>
+<ion-toolbar>
   <ion-icon *ngIf="!isEditMode" name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left;"></ion-icon>
   <ion-icon *ngIf="isEditMode" name="close" (click)="enableEditMode()" class="ion-padding" style="float: left"></ion-icon>
   <ion-icon *ngIf="isEditMode" name="save-outline" (click)="saveProfile()"  class="ion-padding" style="float: right;"></ion-icon>
-</ion-header>
+</ion-toolbar>
 
 <ion-content>
   <!-- <ion-card *ngIf="!isEditMode && !isLibraryMode">

@@ -13,7 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
-
+import { BLE } from '@ionic-native/ble/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,9 +26,16 @@ import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatExpansionModule,
+    MatExpansionModule
+    ],
+  providers: [
+    {
+      provide: RouteReuseStrategy, useClass: IonicRouteStrategy
+    },
+    ProfileService,
+    BluetoothService,
+    BLE,
     BluetoothLE],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ProfileService, BluetoothService, BluetoothLE],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
