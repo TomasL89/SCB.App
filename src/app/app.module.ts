@@ -12,7 +12,6 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
 import { BLE } from '@ionic-native/ble/ngx';
 
 @NgModule({
@@ -34,8 +33,8 @@ import { BLE } from '@ionic-native/ble/ngx';
     },
     ProfileService,
     BluetoothService,
-    BLE,
-    BluetoothLE],
+    BLE
+    ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
