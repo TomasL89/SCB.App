@@ -1,6 +1,9 @@
 export class Device {
   name: string;
   id: string;
-  rssi: number;
-  advertising: any;
+
+  constructor(name: string, id: string) {
+    this.name = name;
+    this.id = id;
+  }
 }

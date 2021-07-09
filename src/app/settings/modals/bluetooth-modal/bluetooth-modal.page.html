@@ -4,16 +4,20 @@
 </ion-header>
 
 <ion-content class="ion-text-center">
-  <div *ngIf="isScanning">
-    <h3>Looking for a Smart Coffee device</h3>
-    <ion-spinner name="crescent" style="transform: scale(5); padding-top: 80%;"></ion-spinner>
-  </div>
-  <div *ngIf="!isScanning && !foundDevice">
-    <h3>Could not find a compatible device, please check that the machine has power</h3>
-  </div>
-  <div *ngIf="foundDevice && !isScanning">
-    <h3>Found a compatible device</h3>
-    <ion-icon name="hardware-chip-outline" style="font-size: 120px; padding-top: 70%;"></ion-icon>
-  </div>
-
+  <ion-refresher slot="fixed" pullFactor="0.5" (ionRefresh)="doRefresh()">
+    <ion-refresher-content refreshingSpinner="none">
+      <div *ngIf="isScanning">
+        <h3>Looking for a Smart Coffee device</h3>
+        <ion-spinner name="crescent" style="transform: scale(5); padding-top: 80%;"></ion-spinner>
+      </div>
+      <div *ngIf="!isScanning && !foundDevice">
+        <h3>Could not find a compatible device, please check that the machine has power</h3>
+      </div>
+      <div *ngIf="foundDevice && !isScanning">
+        <h3>Found a compatible device</h3>
+        <p>{{device.name}}</p>
+        <ion-icon name="hardware-chip-outline" style="font-size: 120px; padding-top: 70%;"></ion-icon>
+      </div>
+    </ion-refresher-content>
+  </ion-refresher>
 </ion-content>

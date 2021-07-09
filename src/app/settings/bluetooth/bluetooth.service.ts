@@ -9,13 +9,25 @@ import { Device } from './bluetooth.device.model';
   providedIn: 'root'
 })
 export class BluetoothService {
-  deviceFound: Subject<boolean> = new Subject<boolean>();
+  platformReady: boolean;
+  device: Subject<Device> = new Subject<Device>();
   isScanning: Subject<boolean> = new Subject<boolean>();
   private deviceId = "0EBC0E51-125A-71FA-4641-D3F3F0CB9F5C";
 
-  constructor(public ble: BLE, public plt: Platform) {
+  constructor(private ble: BLE, private plt: Platform) {
+    console.log("Attempting to autoconnect");
     this.plt.ready().then((readySource) => {
-      console.log('Platform ready from', readySource);
+      this.ble.isEnabled().then(() => {
+        console.log("Bluetooth enabled");
+      }, rejected => {
+        console.log(`Bluetooth reject for reason ${rejected}`);
+      })
+      this.ble.autoConnect(this.deviceId, device => {
+        console.log("Connected to device");
+        const name = device["name"];
+        const id = device["id"];
+        // this.device.next(new Device(name, id));
+      }, this.handleDisconnection)
     })
   }
 
@@ -23,16 +35,36 @@ export class BluetoothService {
     try {
       this.isScanning.next(true);
       this.ble.scan([], 5).subscribe(device => {
-        if (device.)
+        const name = device["name"];
+        const id = device["id"];
+        if (id === this.deviceId) {
+          this.device.next(new Device(name, id));
+          this.ble.stopScan();
+          this.connectToDevice(id);
+          this.isScanning.next(false);
+        }
+
       },error => {
       }, () => {
-
         this.isScanning.next(false);
-        console.log(this.isScanning.observers);
       });
       setTimeout(() => this.isScanning.next(false), 4000)
     } catch (error) {
-      this.isScanning.next(false);
-    }
+      }
+  }
+
+  stopScan() {
+    this.ble.stopScan();
+  }
+
+  private connectToDevice(id: string) {
+    this.ble.connect(id).subscribe(data => {
+      console.log(`Connected device ${id}`);
+      console.log(data);
+    })
+  }
+
+  private handleDisconnection() {
+    this.device.next(undefined);
   }
 }
