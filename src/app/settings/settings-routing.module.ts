@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'bluetooth-modal',
     loadChildren: () => import('./modals/bluetooth-modal/bluetooth-modal.module').then( m => m.BluetoothModalPageModule)
+  },
+  {
+    path: 'power-modal',
+    loadChildren: () => import('./power/power-modal/power-modal.module').then( m => m.PowerModalPageModule)
   }
 ];
 
