@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Profile } from '../profile/profile.model';
 import { ProfileService } from '../profile/profile.service';
+import { BluetoothService } from '../settings/bluetooth/bluetooth.service';
 import { ProfileModalPage } from './profile-modal/profile-modal.page';
 
 @Component({
@@ -11,38 +12,58 @@ import { ProfileModalPage } from './profile-modal/profile-modal.page';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  boilerTemperature: number;
+  boilerTemperature: number = 100;
   currentProfile: Profile;
-  profileSubscription: Subscription;
-  private temperature: number;
 
-  constructor(public modalController: ModalController, private profileService: ProfileService) {}
+  private profileSubscription: Subscription;
+  private dataPayloadSubscription: Subscription;
 
+  constructor(
+    public modalController: ModalController,
+    private profileService: ProfileService,
+    private bluetoothService: BluetoothService,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit() {
     //this.currentProfile = new Profile('Single Origin 18gram', 85, 9, 10, 30, true);
+    this.dataPayloadSubscription = this.bluetoothService.payload.subscribe(payload => {
+      this.ngZone.run(() => {
+        this.boilerTemperature = payload.boilerTemp;
+      });
+    });
 
-    this.temperature = 85;
-    this.boilerTemperature = this.temperature;
-
-    this.profileSubscription = this.profileService.currentProfile.subscribe(profile => {
-      this.currentProfile = profile;
-    }, (error => {
-      console.error(error);
-    }));
+    this.profileSubscription = this.profileService.currentProfile.subscribe(
+      (profile) => {
+        this.currentProfile = profile;
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 
   ngOnDestroy(): void {
+    if (this.dataPayloadSubscription) {
+      this.dataPayloadSubscription.unsubscribe();
+    }
+    if (this.profileSubscription) {
+      this.profileSubscription.unsubscribe();
+    }
   }
 
   openChartModal() {
-    console.log("open chart modal");
+    console.log('open chart modal');
   }
 
   async openProfileModal() {
     const modal = await this.modalController.create({
-      component: ProfileModalPage
+      component: ProfileModalPage,
     });
     return await modal.present();
+  }
+
+  startDataStream() {
+    this.bluetoothService.startDataServices();
   }
 }

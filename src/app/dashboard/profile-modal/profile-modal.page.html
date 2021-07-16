@@ -5,13 +5,6 @@
 </ion-toolbar>
 
 <ion-content>
-  <!-- <ion-card *ngIf="!isEditMode && !isLibraryMode">
-    <ion-card-content >
-      <div class="ion-text-center">
-        <p>Profile Tutorial <ion-icon name="book-outline" slot="end"></ion-icon> </p>
-      </div>
-    </ion-card-content>
-  </ion-card> -->
   <ion-card (click)="enableEditMode()" *ngIf="!isEditMode && !isLibraryMode">
     <ion-card-content>
       <div class="ion-text-center">

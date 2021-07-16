@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { DataPayload } from '../../bluetooth/bluetooth.data-payload.model';
 import { Device } from '../../bluetooth/bluetooth.device.model';
 import { BluetoothService } from '../../bluetooth/bluetooth.service';
 
@@ -21,9 +22,12 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   isScanning: boolean = false;
   heartbeat: string;
   heartbeatCount = 0;
+  payload: DataPayload;
+
   private scanningSubscription: Subscription;
   private deviceSubscription: Subscription;
   private heartbeatSubscription: Subscription;
+  private payloadSubscription: Subscription;
 
   constructor(
     private modalController: ModalController,
@@ -32,6 +36,7 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
+    // todo refactor this, it's messy and problematic
     this.scanningSubscription = this.bluetoothService.isScanning.subscribe(
       (scanning) => {
         this.isScanning = scanning;
@@ -42,6 +47,9 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
     );
     this.deviceSubscription = this.bluetoothService.device.subscribe(
       (device) => {
+        console.log(`Conencted to device ${device.name}`);
+        // this.bluetoothService.startHeartbeat();
+        // this.bluetoothService.startDataPayload();
         this.foundDevice = true;
         this.device = device;
       }
@@ -62,12 +70,19 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
         );
       }
     );
+    this.payloadSubscription = this.bluetoothService.payload.subscribe(payload => {
+      this.zone.run(() => {
+        this.payload = payload;
+      });
+    });
 
     this.bluetoothService.scanDevices();
   }
 
-  getHeartbeat() {
-    this.bluetoothService.startHeartbeat();
+  startData() {
+    this.bluetoothService.startDataServices();
+    // this.bluetoothService.startHeartbeat();
+    // this.bluetoothService.startDataPayload();
   }
 
   ngAfterViewInit(): void {}
@@ -80,6 +95,8 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   dismiss() {
     this.bluetoothService.stopScan();
     this.scanningSubscription.unsubscribe();
+    this.heartbeatSubscription.unsubscribe();
+    this.payloadSubscription.unsubscribe();
     this.modalController.dismiss();
   }
 }
