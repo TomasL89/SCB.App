@@ -2,6 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Profile } from './profile.model';
 import { Storage } from '@ionic/storage'; // This line added manually.
+import { BluetoothService } from '../settings/bluetooth/bluetooth.service';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { Storage } from '@ionic/storage'; // This line added manually.
 export class ProfileService{
   currentProfile: Subject<Profile> = new Subject<Profile>();
 
-  constructor(private storage: Storage) {
+  constructor(private storage: Storage, private bluetoothService: BluetoothService) {
     this.init();
   }
 
@@ -39,6 +40,7 @@ export class ProfileService{
       const newProfile = Array<Profile>();
       this.currentProfile.next(profile);
       newProfile.push(profile);
+      this.sendProfileToDevice(profile);
       await this.storage.set("profiles", newProfile);
       return;
 
@@ -47,6 +49,7 @@ export class ProfileService{
     }
     profiles.push(profile);
     this.currentProfile.next(profile);
+    this.sendProfileToDevice(profile);
     await this.storage.set("profiles", profiles);
   }
 
@@ -71,10 +74,14 @@ export class ProfileService{
     });
 
     const profile = profiles[index];
-
+    this.sendProfileToDevice(profile);
     profile.selected = true;
     this.currentProfile.next(profile);
     await this.storage.set("profiles", profiles);
+  }
+
+  private sendProfileToDevice(profile: Profile) {
+    this.bluetoothService.sendProfileToDevice(profile);
   }
 
 }

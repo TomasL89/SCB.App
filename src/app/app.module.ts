@@ -13,6 +13,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BLE } from '@ionic-native/ble/ngx';
 import { AppVersion } from '@ionic-native/app-version/ngx';
+import { ChartsModule } from 'ng2-charts';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,7 +27,8 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    ChartsModule
     ],
   providers: [
     {
@@ -35,7 +38,8 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
     BluetoothService,
     SettingsService,
     BLE,
-    AppVersion
+    AppVersion,
+    ScreenOrientation
     ],
   bootstrap: [AppComponent],
 })

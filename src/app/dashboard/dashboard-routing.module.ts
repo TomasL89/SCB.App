@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: 'edit',
     loadChildren: () => import('./profile-modal/edit/edit.module').then( m => m.EditPageModule)
+  },
+  {
+    path: 'chart-modal',
+    loadChildren: () => import('./chart-modal/chart-modal/chart-modal.module').then( m => m.ChartModalPageModule)
   }
 ];
 

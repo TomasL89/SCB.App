@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 @Component({
   selector: 'app-tabs',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TabsPage implements OnInit {
 
-  constructor() { }
+  constructor(private screenOrientation: ScreenOrientation) { }
 
   ngOnInit() {
   }

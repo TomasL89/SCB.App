@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TabsPageRoutingModule } from './tabs-routing.module';
+import { ChartModalPageRoutingModule } from './chart-modal-routing.module';
 
-import { TabsPage } from './tabs.page';
+import { ChartModalPage } from './chart-modal.page';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ChartsModule } from 'ng2-charts';
+import { ChartComponent } from '../../chart/chart/chart.component';
 
 
 @NgModule({
@@ -16,10 +17,10 @@ import { ChartsModule } from 'ng2-charts';
     CommonModule,
     FormsModule,
     IonicModule,
-    TabsPageRoutingModule,
+    ChartModalPageRoutingModule,
     ChartsModule
   ],
-  declarations: [TabsPage],
+  declarations: [ChartModalPage, ChartComponent],
   providers: [ScreenOrientation]
 })
-export class TabsPageModule {}
+export class ChartModalPageModule {}

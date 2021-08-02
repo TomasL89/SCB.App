@@ -16,16 +16,16 @@ import { SettingsService } from './settings.service';
 export class SettingsPage implements OnInit {
   firmwareVersion: number = 1.0;
   appVersion: number = 1.5;
-  device: Device = undefined;
+  // device: Device = undefined;
   deviceSubscription: Subscription;
   settingsSubscription: Subscription;
   settings: Settings;
 
 
   constructor(public modalController: ModalController, private bluetoothService: BluetoothService, private settingsService: SettingsService) {
-    this.deviceSubscription = bluetoothService.device.subscribe(device => {
-      this.device = device;
-    });
+    // this.deviceSubscription = bluetoothService.device.subscribe(device => {
+    //   this.device = device;
+    // });
     this.settingsSubscription = settingsService.settings.subscribe(settings => {
       this.settings = settings;
       this.appVersion = this.settings.appVersion;
@@ -35,12 +35,12 @@ export class SettingsPage implements OnInit {
   ngOnInit() {
   }
 
-  async openBluetoothModal() {
-    const modal = await this.modalController.create({
-      component: BluetoothModalPage
-    });
-    return await modal.present();
-  }
+  // async openBluetoothModal() {
+  //   const modal = await this.modalController.create({
+  //     component: BluetoothModalPage
+  //   });
+  //   return await modal.present();
+  // }
 
   async openPowerModal() {
     const modal = await this.modalController.create({

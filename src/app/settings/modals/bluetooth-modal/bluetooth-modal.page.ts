@@ -21,7 +21,6 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   foundDevice: boolean = false;
   isScanning: boolean = false;
   heartbeat: string;
-  heartbeatCount = 0;
   payload: DataPayload;
 
   private scanningSubscription: Subscription;
@@ -36,7 +35,6 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
-    // todo refactor this, it's messy and problematic
     this.scanningSubscription = this.bluetoothService.isScanning.subscribe(
       (scanning) => {
         this.isScanning = scanning;
@@ -47,42 +45,48 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
     );
     this.deviceSubscription = this.bluetoothService.device.subscribe(
       (device) => {
-        console.log(`Conencted to device ${device.name}`);
-        // this.bluetoothService.startHeartbeat();
-        // this.bluetoothService.startDataPayload();
+        this.isScanning = false;
         this.foundDevice = true;
         this.device = device;
+      }, error => {
+        console.log(`ERROR IN BLUETOOTH MODAL ${error}`);
       }
     );
     this.heartbeatSubscription = this.bluetoothService.heartbeat.subscribe(
       (heartbeat) => {
         this.zone.run(
           () => {
-            console.log('got heart beat from service');
-            this.heartbeatCount++;
-            console.log(`Heartbeat Count: ${this.heartbeatCount}`);
             this.heartbeat = heartbeat;
-            console.log(`Heartbeat message: ${this.heartbeat}`);
           },
           (error) => {
             console.log(`Got an error: ${error}`);
           }
         );
+      }, error => {
+        console.log(`ERROR WITH BLUETOOTH HEARTBEAT SUB ${error}`);
       }
     );
     this.payloadSubscription = this.bluetoothService.payload.subscribe(payload => {
       this.zone.run(() => {
         this.payload = payload;
       });
+    }, error => {
+      console.log(`ERROR WITH BLUETOOTH PAYLOAD SUB ${error}`);
     });
 
     this.bluetoothService.scanDevices();
   }
 
+  connect() {
+    this.bluetoothService.connect();
+  }
+
   startData() {
     this.bluetoothService.startDataServices();
-    // this.bluetoothService.startHeartbeat();
-    // this.bluetoothService.startDataPayload();
+  }
+
+  stopData() {
+    this.bluetoothService.stopDataServices();
   }
 
   ngAfterViewInit(): void {}

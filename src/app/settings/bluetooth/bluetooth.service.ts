@@ -6,6 +6,7 @@ import { Device } from './bluetooth.device.model';
 import { SettingsService } from '../settings.service';
 import { Settings } from '../settings.model';
 import { DataPayload } from './bluetooth.data-payload.model';
+import { Profile } from 'src/app/profile/profile.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,11 @@ export class BluetoothService implements OnDestroy {
   private serviceId = '090c9678-e397-11eb-ba80-0242ac130004';
   private heartbeatCharacteristicId = '145b9574-e397-11eb-ba80-0242ac130004';
   private dataPayloadCharacteristicId = '2e9eb0fa-e397-11eb-ba80-0242ac130004';
+  private profilePayloadCharacteristicId = 'afe6a8da-e397-11eb-ba80-0242ac130004';
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
+  private isConnected: boolean;
 
   constructor(
     private ble: BLE,
@@ -37,58 +40,100 @@ export class BluetoothService implements OnDestroy {
       (settings) => {
         this.settings = settings;
         this.deviceId = this.settings.smartDeviceId;
+        console.log(`SETTINGS DEVICE ID: ${this.deviceId}`);
       }
     );
 
-    // this.plt.ready().then((readySource) => {
-    //   this.ble.isEnabled().then(
-    //     () => {
-    //       console.log('Bluetooth enabled');
-    //     },
-    //     (rejected) => {
-    //       console.log(`Bluetooth reject for reason ${rejected}`);
-    //     }
-    //   );
-    // attempt to auto connect three times
+    this.plt.ready().then((readySource) => {
+        this.ble.enable().then(() => {
+          this.ble.isEnabled().then(
+            () => {
+              console.log('Bluetooth enabled');
+              this.ble.autoConnect(
+                this.deviceId,
+                this.handleConnection,
+                this.handleDisconnection
+              );
+            },
+            (rejected) => {
+              console.log(`Bluetooth reject for reason ${rejected}`);
+            }
+          );
+        }).catch(error =>
+          {
+            console.log(`COULD NOT ENABLE ${error}`);
+          })
+    });
+  }
 
-    for (let i = 1; i < 4; i++) {
-      console.log(`ATTEMPT ${i}`);
-      this.ble.autoConnect(
-        this.deviceId,
-        this.handleConnection(this),
-        this.handleDisconnection
-      );
-      if (this.ble.isConnected) {
-        break;
-      }
-    }
-    // if (!this.ble.isConnected(this.deviceId)) {
-    //   this.ble.autoConnect(
-    //     this.deviceId,
-    //     (device) => {
-    //       console.log('Connected to device');
-    //       const name = device['name'];
-    //       const id = device['id'];
-    //       this.device.next(new Device(name, id));
-    //       this.setupHeartbeatNotifications();
-    //       this.setupDataPayloadNotifications();
-    //     },
-    //     this.handleDisconnection
-    //   );
-    // } else {
-    //   this.device.next(new Device('Smart Coffee Device', this.deviceId));
-    //   console.log('Already connected');
-    //   this.setupHeartbeatNotifications();
-    // }
-    // });
+  connect() {
+    console.log("ATTEMPTING TO CONNECT");
+    this.ble.connect(this.deviceId).subscribe(() => {
+      console.log("connected");
+    },error => {
+      console.log(`ERROR WITH CONNECTION ${error}`);
+    })
   }
 
   startDataServices() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
+    //this.setupProfilePayloadNotifications();
   }
 
-  async scanDevices() {
+
+  stopDataServices() {
+    this.ble.stopNotification(this.deviceId, this.serviceId ,this.heartbeatCharacteristicId);
+    this.ble.stopNotification(this.deviceId, this.serviceId ,this.dataPayloadCharacteristicId);
+  }
+
+  scanDevices() {
+    this.ble.isConnected(this.deviceId).then(() => {
+      this.isScanning.next(false);
+      this.device.next(new Device("Smart Coffee", this.deviceId));
+      console.log("ALREADY CONNECTED AND NO NEED TO SCAN");
+    }, rejected => {
+      this.scanDevicesAsync();
+    });
+  }
+
+  stopScan() {
+    this.ble.stopScan();
+  }
+
+  sendProfileToDevice(profile: Profile) {
+    const boilerTemp = profile.boilerTemperature;
+    const pumpPressure = profile.pumpPressure;
+    const preInfusionTime = profile.preInfusionTime;
+    const shotTime = profile.shotTime;
+
+    // need better validation and to alert the user
+    if (boilerTemp <= 0 || boilerTemp === undefined) return;
+    if (pumpPressure <= 0 || pumpPressure === undefined) return;
+    if (preInfusionTime < -1 || preInfusionTime === undefined) return;
+    if (shotTime <= 0 || shotTime === undefined) return;
+
+    //  private profilePrefixes = ['b:', 'p:', 'i:', 's:'];
+
+    const profileSettings = [
+      "b:" + boilerTemp,
+      pumpPressure < 10 ? "p:0" + pumpPressure : "p:" + pumpPressure,
+      preInfusionTime < 10 ? "i:0" + preInfusionTime : "i:" + preInfusionTime,
+      shotTime < 10 ? "s:0" + shotTime : "s:" + shotTime];
+
+    for (var i = 0; i < profileSettings.length; i++) {
+
+      let payload = new TextEncoder().encode(profileSettings[i]);
+
+      this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.profilePayloadCharacteristicId, payload.buffer).then(completed => {
+        console.log(`completed with response ${completed}`);
+      }).catch(rejected => {
+        console.log(`failed with response ${rejected}`);
+      });
+    }
+  }
+
+  private async scanDevicesAsync() {
     try {
       this.isScanning.next(true);
       this.ble.scan([], 5).subscribe(
@@ -102,11 +147,11 @@ export class BluetoothService implements OnDestroy {
             this.isScanning.next(false);
             this.settingsService.setDeviceId(id);
             this.deviceId = id;
-            this.setupHeartbeatNotifications();
-            this.setupDataPayloadNotifications();
           }
         },
-        (error) => {},
+        (error) => {
+          console.log(`SCANNING ERROR ${error}`);
+        },
         () => {
           this.isScanning.next(false);
         }
@@ -115,11 +160,8 @@ export class BluetoothService implements OnDestroy {
     } catch (error) {}
   }
 
-  stopScan() {
-    this.ble.stopScan();
-  }
-
   private setupHeartbeatNotifications() {
+    console.log(`HEARTBEAT DEVICE ID: ${this.deviceId}`);
     this.heartBeatSubscription = this.ble
       .startNotification(
         this.deviceId,
@@ -152,14 +194,15 @@ export class BluetoothService implements OnDestroy {
       )
       .subscribe(
         (buffer) => {
-          console.log(buffer);
-          var data = new Uint8Array(buffer);
+          console.log(`GOT BUFFER ${buffer.length}`);
+          var data = new Uint8Array(buffer[0]);
 
           const cycleTime = data[0];
           const boilerTemp = data[1];
           const pumpPressure = data[2];
           const cycleStage = data[3];
 
+          console.log(`PAYLOAD RECEIVED : ${boilerTemp}`);
           const payload = new DataPayload(
             cycleTime,
             boilerTemp,
@@ -177,6 +220,12 @@ export class BluetoothService implements OnDestroy {
       );
   }
 
+  setupProfilePayloadNotifications() {
+    this.ble.startNotification(this.deviceId, this.serviceId, this.profilePayloadCharacteristicId).subscribe(buffer => {
+      console.log('payload notifiction');
+    })
+  }
+
   private connectToDevice(id: string) {
     this.ble.connect(id).subscribe((data) => {
       console.log(`Connected device ${id}`);
@@ -184,11 +233,12 @@ export class BluetoothService implements OnDestroy {
     });
   }
 
-  private handleConnection(device: any) {
-    const name = device['name'];
-    const id = device['id'];
-    this.device.next(new Device(name, id));
-    console.log(`CONNECTION SUCCESFUL FOR DEVICE NAME: ${device} `);
+  private handleConnection() {
+    this.setupHeartbeatNotifications();
+    this.setupDataPayloadNotifications();
+    this.isConnected = true;
+    console.log(`Connected to Smart Coffee device: ${this.deviceId}`);
+    this.device.next(new Device('Smart Coffee', this.deviceId));
   }
 
   private handleDisconnection() {

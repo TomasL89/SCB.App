@@ -2,33 +2,28 @@
 
 <ion-content>
   <ion-grid style="padding-bottom: 0; margin-bottom: 0">
-    <ion-row style="height: fit-content">
+    <ion-row>
       <ion-col>
-        <ion-card style="height: 80px; background-color: darksalmon;">
-          <ion-card-content style="background-color: cornflowerblue;">
-              <ion-icon name="thermometer-outline" style="float: inline-start; background-color: aqua;"></ion-icon>
-              <ion-text style="background-color: burlywood;">{{boilerTemperature}} °C</ion-text>
+        <ion-card style="height: 80px;align-content: space-around; " >
+          <ion-card-content style="padding-top: 25px; ">
+              <ion-icon name="thermometer-outline" style="float: inline-start; padding-bottom: 0;" ></ion-icon>
+              <ion-text>{{boilerTemperature}} °C</ion-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
       <ion-col>
-        <ion-card style="height: 80px">
-          <ion-tab-button>
+        <ion-card style="height: 80px" (click)="openBluetoothModal()">
+          <ion-tab-button style="padding-top: 20px;">
             <ion-icon
               name="hardware-chip-outline"
-              style="float: none"
+              style="float: none; font-size: 50px;"
+              [color]='device ? "dark": "danger"'
             ></ion-icon>
           </ion-tab-button>
         </ion-card>
       </ion-col>
     </ion-row>
-    <ion-card (click)="openChartModal()">
-      <ion-card-content>
-        <!-- <div class="ion-text-center">{{boilerTemperature}} °C</div> -->
-        <!-- <ion-item lines="none"> </ion-item> -->
-        <ion-icon name="expand-outline"></ion-icon>
-      </ion-card-content>
-    </ion-card>
+
     <ion-card (click)="openProfileModal()">
       <ion-card-content *ngIf="currentProfile">
         <div class="profile-item">
@@ -60,5 +55,11 @@
         <ion-icon name="enter-outline"></ion-icon>
       </ion-card-content>
     </ion-card>
+    <ion-card (click)="openChartModal()" >
+      <ion-card-content>
+        <ion-icon name="expand-outline"></ion-icon>
+      </ion-card-content>
+    </ion-card>
   </ion-grid>
 </ion-content>
+
