@@ -70,6 +70,8 @@ export class BluetoothService implements OnDestroy {
     console.log("ATTEMPTING TO CONNECT");
     this.ble.connect(this.deviceId).subscribe(() => {
       console.log("connected");
+      this.stopDataServices();
+      this.startDataServices();
     },error => {
       console.log(`ERROR WITH CONNECTION ${error}`);
     })
@@ -92,6 +94,8 @@ export class BluetoothService implements OnDestroy {
       this.isScanning.next(false);
       this.device.next(new Device("Smart Coffee", this.deviceId));
       console.log("ALREADY CONNECTED AND NO NEED TO SCAN");
+      this.stopDataServices();
+      this.startDataServices();
     }, rejected => {
       this.scanDevicesAsync();
     });
@@ -194,7 +198,6 @@ export class BluetoothService implements OnDestroy {
       )
       .subscribe(
         (buffer) => {
-          console.log(`GOT BUFFER ${buffer.length}`);
           var data = new Uint8Array(buffer[0]);
 
           const cycleTime = data[0];
@@ -202,7 +205,6 @@ export class BluetoothService implements OnDestroy {
           const pumpPressure = data[2];
           const cycleStage = data[3];
 
-          console.log(`PAYLOAD RECEIVED : ${boilerTemp}`);
           const payload = new DataPayload(
             cycleTime,
             boilerTemp,
@@ -229,6 +231,8 @@ export class BluetoothService implements OnDestroy {
   private connectToDevice(id: string) {
     this.ble.connect(id).subscribe((data) => {
       console.log(`Connected device ${id}`);
+      this.stopDataServices();
+      this.startDataServices();
       console.log(data);
     });
   }
