@@ -10,7 +10,7 @@ import { BluetoothService } from 'src/app/settings/bluetooth/bluetooth.service';
   styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnInit{
-
+// todo move all this to a page instead? refactor
   datasets: ChartDataSets[] = [
     { data: [], label: 'Temperature', fill: false, yAxisID: 'Temp' },
     { data: [], label: 'Pressure', fill: false, yAxisID: 'Pres' },
@@ -47,7 +47,6 @@ export class ChartComponent implements OnInit{
 
   ngOnInit(): void {
     this.bluetoothService.payload.subscribe(payload => {
-      console.log(`PAYLOAD: ${payload.boilerTemp}  -- ${payload.cycleTime}`)
       this.pushToChart(payload);
     })
   }

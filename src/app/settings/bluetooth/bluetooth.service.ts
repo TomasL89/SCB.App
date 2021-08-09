@@ -7,6 +7,7 @@ import { SettingsService } from '../settings.service';
 import { Settings } from '../settings.model';
 import { DataPayload } from './bluetooth.data-payload.model';
 import { Profile } from 'src/app/profile/profile.model';
+import { PIDTuningDataPayload } from './boiler-pid.data-payload.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class BluetoothService implements OnDestroy {
   isScanning: Subject<boolean> = new Subject<boolean>();
   heartbeat: Subject<string> = new Subject<string>();
   payload: Subject<DataPayload> = new Subject<DataPayload>();
+  pidTuningPayload: Subject<PIDTuningDataPayload> = new Subject<PIDTuningDataPayload>();
 
   private settings: Settings;
   private deviceId = '';
@@ -24,9 +26,11 @@ export class BluetoothService implements OnDestroy {
   private heartbeatCharacteristicId = '145b9574-e397-11eb-ba80-0242ac130004';
   private dataPayloadCharacteristicId = '2e9eb0fa-e397-11eb-ba80-0242ac130004';
   private profilePayloadCharacteristicId = 'afe6a8da-e397-11eb-ba80-0242ac130004';
+  private pidTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
+  private pidTuningPayloadSubscription: Subscription;
   private isConnected: boolean;
 
   constructor(
@@ -80,13 +84,15 @@ export class BluetoothService implements OnDestroy {
   startDataServices() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
-    //this.setupProfilePayloadNotifications();
+    this.setupPidTuningNotifications();
   }
 
 
   stopDataServices() {
     this.ble.stopNotification(this.deviceId, this.serviceId ,this.heartbeatCharacteristicId);
     this.ble.stopNotification(this.deviceId, this.serviceId ,this.dataPayloadCharacteristicId);
+    // todo this might need to be started up in a different way
+    this.ble.stopNotification(this.deviceId, this.serviceId, this.pidTuningPayloadCharacteristicId);
   }
 
   scanDevices() {
@@ -176,7 +182,6 @@ export class BluetoothService implements OnDestroy {
         (buffer) => {
           var data = new Uint8Array(buffer);
           var output = new TextDecoder().decode(data);
-          console.log(`Converted buffer to ${output}`);
           this.heartbeat.next(output);
         },
         (error) => {
@@ -222,6 +227,42 @@ export class BluetoothService implements OnDestroy {
       );
   }
 
+   private setupPidTuningNotifications() {
+    this.ble
+      .startNotification(
+        this.deviceId,
+        this.serviceId,
+        this.pidTuningPayloadCharacteristicId
+      )
+      .subscribe(
+        (buffer) => {
+          var data = new Uint8Array(buffer[0]);
+          const cycleTIme = data[0];
+          const boilerTemp = data[1];
+          const boilerTarget = data[2];
+          const dimmerPower = data[3];
+          const kp = data[4];
+          const ki = data[5];
+          const kd = data[6];
+
+          const payload = new PIDTuningDataPayload(
+            cycleTIme,
+            boilerTemp,
+            boilerTarget,
+            dimmerPower,
+            kp,
+            ki,
+            kd
+          );
+          this.pidTuningPayload.next(payload);
+        },
+        (error) => {
+          console.log('PID TUNING PAYLOAD ERROR');
+          console.log(error);
+        }
+      );
+  }
+
   setupProfilePayloadNotifications() {
     this.ble.startNotification(this.deviceId, this.serviceId, this.profilePayloadCharacteristicId).subscribe(buffer => {
       console.log('payload notifiction');
@@ -240,6 +281,7 @@ export class BluetoothService implements OnDestroy {
   private handleConnection() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
+    this.setupPidTuningNotifications();
     this.isConnected = true;
     console.log(`Connected to Smart Coffee device: ${this.deviceId}`);
     this.device.next(new Device('Smart Coffee', this.deviceId));

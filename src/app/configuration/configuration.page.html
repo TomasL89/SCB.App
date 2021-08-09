@@ -1,9 +1,17 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>configuration</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-header> </ion-header>
 
 <ion-content>
-
+  <ion-grid style="padding-bottom: 0;  margin-bottom: 0;">
+    <ion-row>
+      <ion-col>
+        <ion-card (click)="openBoilerPidModal()">
+          <ion-card-content>
+            <div class="ion-text-center">
+              <p>Boiler PID <ion-icon name="trending-up-outline" slot="end"></ion-icon></p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

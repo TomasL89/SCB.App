@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: ConfigurationPage
+  },
+  {
+    path: 'boiler-pid-modal',
+    loadChildren: () => import('./boiler-pid-modal/boiler-pid-modal/boiler-pid-modal.module').then( m => m.BoilerPidModalPageModule)
   }
 ];
 
