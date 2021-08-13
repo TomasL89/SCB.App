@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'boiler-pid-modal',
     loadChildren: () => import('./boiler-pid-modal/boiler-pid-modal/boiler-pid-modal.module').then( m => m.BoilerPidModalPageModule)
+  },
+  {
+    path: 'pump-pid-modal',
+    loadChildren: () => import('./pump-pid-modal/pump-pid-modal/pump-pid-modal.module').then( m => m.PumpPidModalPageModule)
   }
 ];
 

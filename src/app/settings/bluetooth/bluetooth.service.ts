@@ -7,7 +7,8 @@ import { SettingsService } from '../settings.service';
 import { Settings } from '../settings.model';
 import { DataPayload } from './bluetooth.data-payload.model';
 import { Profile } from 'src/app/profile/profile.model';
-import { PIDTuningDataPayload } from './boiler-pid.data-payload.model';
+import { BoilerPIDTuningDataPayload } from './boiler-pid.data-payload.model';
+import { PumpPIDTuningDataPayload } from './pump-pid.data-payload.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,8 @@ export class BluetoothService implements OnDestroy {
   isScanning: Subject<boolean> = new Subject<boolean>();
   heartbeat: Subject<string> = new Subject<string>();
   payload: Subject<DataPayload> = new Subject<DataPayload>();
-  pidTuningPayload: Subject<PIDTuningDataPayload> = new Subject<PIDTuningDataPayload>();
+  boilerTuningPayload: Subject<BoilerPIDTuningDataPayload> = new Subject<BoilerPIDTuningDataPayload>();
+  pumpTuningPayload: Subject<PumpPIDTuningDataPayload> = new Subject<PumpPIDTuningDataPayload>();
 
   private settings: Settings;
   private deviceId = '';
@@ -84,7 +86,8 @@ export class BluetoothService implements OnDestroy {
   startDataServices() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
-    this.setupPidTuningNotifications();
+    this.setupBoilerPidTuningNotifications();
+    this.setupPumpPidTuningNotifications();
   }
 
 
@@ -227,7 +230,7 @@ export class BluetoothService implements OnDestroy {
       );
   }
 
-   private setupPidTuningNotifications() {
+   private setupBoilerPidTuningNotifications() {
     this.ble
       .startNotification(
         this.deviceId,
@@ -245,7 +248,7 @@ export class BluetoothService implements OnDestroy {
           const ki = data[5];
           const kd = data[6];
 
-          const payload = new PIDTuningDataPayload(
+          const payload = new BoilerPIDTuningDataPayload(
             cycleTIme,
             boilerTemp,
             boilerTarget,
@@ -254,7 +257,43 @@ export class BluetoothService implements OnDestroy {
             ki,
             kd
           );
-          this.pidTuningPayload.next(payload);
+          this.boilerTuningPayload.next(payload);
+        },
+        (error) => {
+          console.log('PID TUNING PAYLOAD ERROR');
+          console.log(error);
+        }
+      );
+  }
+
+  private setupPumpPidTuningNotifications() {
+    this.ble
+      .startNotification(
+        this.deviceId,
+        this.serviceId,
+        this.pidTuningPayloadCharacteristicId
+      )
+      .subscribe(
+        (buffer) => {
+          var data = new Uint8Array(buffer[0]);
+          const cycleTIme = data[0];
+          const pumpPressure = data[1];
+          const pumpPressureTarget = data[2];
+          const dimmerPower = data[3];
+          const kp = data[4];
+          const ki = data[5];
+          const kd = data[6];
+
+          const payload = new PumpPIDTuningDataPayload(
+            cycleTIme,
+            pumpPressure,
+            pumpPressureTarget,
+            dimmerPower,
+            kp,
+            ki,
+            kd
+          );
+          this.pumpTuningPayload.next(payload);
         },
         (error) => {
           console.log('PID TUNING PAYLOAD ERROR');
@@ -281,7 +320,8 @@ export class BluetoothService implements OnDestroy {
   private handleConnection() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
-    this.setupPidTuningNotifications();
+    this.setupBoilerPidTuningNotifications();
+    this.setupPumpPidTuningNotifications();
     this.isConnected = true;
     console.log(`Connected to Smart Coffee device: ${this.deviceId}`);
     this.device.next(new Device('Smart Coffee', this.deviceId));

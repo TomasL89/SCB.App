@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { BluetoothService } from 'src/app/settings/bluetooth/bluetooth.service';
 import { Label } from 'ng2-charts';
 import { Subscription } from 'rxjs';
-import { PIDTuningDataPayload } from 'src/app/settings/bluetooth/boiler-pid.data-payload.model';
+import { BoilerPIDTuningDataPayload } from 'src/app/settings/bluetooth/boiler-pid.data-payload.model';
 
 @Component({
   selector: 'app-boiler-pid-modal',
@@ -63,7 +63,7 @@ export class BoilerPidModalPage implements OnInit {
   ngOnInit() {
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
 
-    this.bluetoothService.pidTuningPayload.subscribe(payload => {
+    this.bluetoothService.boilerTuningPayload.subscribe(payload => {
       this.zone.run(() => {
         this.pushToChart(payload);
         this.currentBoilerTemp = payload.boilerTemp;
@@ -76,7 +76,19 @@ export class BoilerPidModalPage implements OnInit {
 
   }
 
-  private pushToChart(payload: PIDTuningDataPayload) : void {
+  sendPidSettings() {
+    console.log("sending PID settings");
+  }
+
+  dismiss() {
+    if (this.dataPayloadSubscription) {
+      this.dataPayloadSubscription.remove;
+    }
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    this.modalController.dismiss();
+  }
+
+  private pushToChart(payload: BoilerPIDTuningDataPayload) : void {
     if (this.dataSets[0].data.length > 60) {
       this.dataSets[0].data = this.dataSets[0].data.slice(1);
       this.dataSets[1].data = this.dataSets[1].data.slice(1);
@@ -104,17 +116,4 @@ export class BoilerPidModalPage implements OnInit {
     }
     return this.vlowMin;
   }
-
-  sendPidSettings() {
-    console.log("sending PID settings");
-  }
-
-  dismiss() {
-    if (this.dataPayloadSubscription) {
-      this.dataPayloadSubscription.remove;
-    }
-    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-    this.modalController.dismiss();
-  }
-
 }

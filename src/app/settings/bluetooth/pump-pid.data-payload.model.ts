@@ -1,7 +1,7 @@
-export class BoilerPIDTuningDataPayload {
+export class PumpPIDTuningDataPayload {
   cycleTime: number;
-  boilerTemp: number;
-  boilerTarget: number;
+  pumpPressure: number;
+  pumpPressureTarget: number;
   dimmerPower: number;
   PIDKp: number;
   PIDKi: number;
@@ -16,8 +16,8 @@ export class BoilerPIDTuningDataPayload {
     PIDKi: number,
     PIDKd: number) {
       this.cycleTime = cycleTime;
-      this.boilerTemp = boilerTemp;
-      this.boilerTarget = boilerTarget;
+      this.pumpPressure = boilerTemp;
+      this.pumpPressureTarget = boilerTarget;
       this.dimmerPower = dimmerPower;
       this.PIDKp = PIDKp;
       this.PIDKi = PIDKi;
