@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { PumpPidModalPageRoutingModule } from './pump-pid-modal-routing.module';
 
 import { PumpPidModalPage } from './pump-pid-modal.page';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PumpPidModalPageRoutingModule
+    PumpPidModalPageRoutingModule,
+    ChartsModule
   ],
   declarations: [PumpPidModalPage]
 })

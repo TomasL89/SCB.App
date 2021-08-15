@@ -91,4 +91,8 @@ export class PumpPidModalPage implements OnInit {
       this.dataLabels.push(payload.cycleTime.toString());
     }
 
+    sendPidSettings() {
+      console.log("sending to server");
+    }
+
 }
