@@ -28,7 +28,8 @@ export class BluetoothService implements OnDestroy {
   private heartbeatCharacteristicId = '145b9574-e397-11eb-ba80-0242ac130004';
   private dataPayloadCharacteristicId = '2e9eb0fa-e397-11eb-ba80-0242ac130004';
   private profilePayloadCharacteristicId = 'afe6a8da-e397-11eb-ba80-0242ac130004';
-  private pidTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
+  private heaterTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
+  private pumpTuningPayloadCharacteristicID = '5b74e49a-e397-11eb-ba80-0242ac130004';
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
@@ -95,7 +96,7 @@ export class BluetoothService implements OnDestroy {
     this.ble.stopNotification(this.deviceId, this.serviceId ,this.heartbeatCharacteristicId);
     this.ble.stopNotification(this.deviceId, this.serviceId ,this.dataPayloadCharacteristicId);
     // todo this might need to be started up in a different way
-    this.ble.stopNotification(this.deviceId, this.serviceId, this.pidTuningPayloadCharacteristicId);
+    this.ble.stopNotification(this.deviceId, this.serviceId, this.heaterTuningPayloadCharacteristicId);
   }
 
   scanDevices() {
@@ -235,7 +236,7 @@ export class BluetoothService implements OnDestroy {
       .startNotification(
         this.deviceId,
         this.serviceId,
-        this.pidTuningPayloadCharacteristicId
+        this.heaterTuningPayloadCharacteristicId
       )
       .subscribe(
         (buffer) => {
@@ -271,7 +272,7 @@ export class BluetoothService implements OnDestroy {
       .startNotification(
         this.deviceId,
         this.serviceId,
-        this.pidTuningPayloadCharacteristicId
+        this.pumpTuningPayloadCharacteristicID
       )
       .subscribe(
         (buffer) => {
