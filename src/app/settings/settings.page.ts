@@ -20,6 +20,7 @@ export class SettingsPage implements OnInit {
   deviceSubscription: Subscription;
   settingsSubscription: Subscription;
   settings: Settings;
+  economyModeOn: boolean = true;
 
 
   constructor(public modalController: ModalController, private bluetoothService: BluetoothService, private settingsService: SettingsService) {

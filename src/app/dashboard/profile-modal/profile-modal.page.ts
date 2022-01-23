@@ -1,10 +1,14 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Profile } from 'src/app/profile/profile.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ProfileService } from 'src/app/profile/profile.service';
 import { Subscription } from 'rxjs';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import { ChartConfiguration, ChartDataSets, ChartOptions } from 'chart.js';
+import { BaseChartDirective, Label } from 'ng2-charts';
+
 
 @Component({
   selector: 'app-profile-modal',
@@ -12,11 +16,39 @@ import {v4 as uuidv4} from 'uuid';
   styleUrls: ['./profile-modal.page.scss'],
 })
 export class ProfileModalPage implements AfterViewInit {
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+
+
   profileSubscription: Subscription;
   currentProfile: Profile;
   profiles: Array<Profile>;
   isEditMode: boolean;
   isLibraryMode: boolean;
+  isComplexEditMode: boolean;
+  complexProfile: Array<number> = new Array(60).fill(0);
+
+  private profilePosition = 0;
+  private pointBackgroundColors = ['green']
+
+  datasets: ChartDataSets[] = [
+    { data: this.complexProfile, label: 'Pressure', fill:true, yAxisID: 'Bar', pointBackgroundColor: this.pointBackgroundColors.fill('red', 1, 59)}
+  ]
+
+  chartOptions: ChartOptions = {
+    scales: {
+      yAxes: [{
+        id: 'Bar',
+        type: 'linear',
+        position: 'left',
+        ticks: {
+          max: 12,
+          min: 0
+        },
+      }],
+    }
+    }
+
+  dataLabels: Label[] = Array.from({length: 60}, (_, i) => (i + 1).toString());
 
   profileForm = new FormGroup({
     name: new FormControl(''),
@@ -26,7 +58,16 @@ export class ProfileModalPage implements AfterViewInit {
     shotTime: new FormControl('')
   })
 
-  constructor(private modalController: ModalController, private profileService: ProfileService) {
+  complexProfileForm = new FormGroup({
+    name: new FormControl(''),
+    boilerTemperature: new FormControl(''),
+    profileData: new FormControl('')
+  });
+
+  constructor(
+    private modalController: ModalController,
+    private profileService: ProfileService,
+    private screenOrientation: ScreenOrientation) {
 
   }
 
@@ -42,9 +83,12 @@ export class ProfileModalPage implements AfterViewInit {
       this.profiles = profiles;
       console.log(profiles);
     });
+
   }
 
   dismiss() {
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+
     this.modalController.dismiss({
       'dismissed': true
     });
@@ -52,6 +96,13 @@ export class ProfileModalPage implements AfterViewInit {
 
   enableEditMode() {
     this.isEditMode = !this.isEditMode;
+  }
+
+  enableComplexEditMode() {
+    this.isComplexEditMode = !this.isComplexEditMode;
+    if (this.isComplexEditMode) {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+    }
   }
 
   enableLibraryMode() {
@@ -86,6 +137,44 @@ export class ProfileModalPage implements AfterViewInit {
       this.profiles = profiles;
     })
   }
+
+
+
+  adjustPressure(direction: string) {
+
+    if (direction==='up') {
+      if (this.complexProfile[this.profilePosition] <= 12) {
+        this.complexProfile[this.profilePosition] = this.complexProfile[this.profilePosition] + 1;
+      }
+    }
+    else if (direction ==='right') {
+      if (this.profilePosition <= 59) {
+        this.profilePosition += 1;
+        this.chart.datasets[0].pointBackgroundColor[this.profilePosition] = 'green'
+        this.chart.datasets[0].pointBackgroundColor[this.profilePosition -1] = 'red'
+      }
+      else {
+        this.profilePosition = 0;
+      }
+    }
+    else if (direction ==='down') {
+      if (this.complexProfile[this.profilePosition] > 0) {
+        this.complexProfile[this.profilePosition] = this.complexProfile[this.profilePosition] - 1;
+      }
+    }
+    else if (direction ==='left') {
+      if (this.profilePosition > 0) {
+        this.profilePosition -= 1;
+        this.chart.datasets[0].pointBackgroundColor[this.profilePosition] = 'green'
+        this.chart.datasets[0].pointBackgroundColor[this.profilePosition + 1] = 'red'
+      }
+      else {
+        this.profilePosition = 0;
+      }
+    }
+    this.chart?.update();
+  }
+
 
   editProfile(id: string) {
 

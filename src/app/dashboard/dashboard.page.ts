@@ -16,9 +16,11 @@ import { ProfileModalPage } from './profile-modal/profile-modal.page';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  boilerTemperature: number = 100;
+  boilerTemperature: number = 0;
+  steamTemperature: number = 0;
   currentProfile: Profile;
   device: Device = undefined;
+  displayName: string = "No device connected"
 
   private profileSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
@@ -39,12 +41,13 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.ngZone.run(() => {
         this.device = device;
         console.log("GOT DEVICE IN DASHBOARD")
+        this.displayName = device.name;
       });
     });
-    //this.currentProfile = new Profile('Single Origin 18gram', 85, 9, 10, 30, true);
     this.dataPayloadSubscription = this.bluetoothService.payload.subscribe(payload => {
       this.ngZone.run(() => {
         this.boilerTemperature = payload.boilerTemp;
+        this.steamTemperature = payload.steamTemp;
       });
     });
 

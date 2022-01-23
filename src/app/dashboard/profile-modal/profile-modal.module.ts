@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ProfileModalPageRoutingModule } from './profile-modal-routing.module';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProfileModalPage } from './profile-modal.page';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { ProfileModalPage } from './profile-modal.page';
     ReactiveFormsModule,
     IonicModule,
     ProfileModalPageRoutingModule,
-    MatExpansionModule
+    MatExpansionModule,
+    ChartsModule
   ],
   declarations: [ProfileModalPage]
 })

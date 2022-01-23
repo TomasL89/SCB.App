@@ -2,24 +2,57 @@
 
 <ion-content>
   <ion-grid style="padding-bottom: 0; margin-bottom: 0">
-    <ion-row>
+    <ion-row style="padding-top: 25px">
       <ion-col>
-        <ion-card style="height: 80px;align-content: space-around; " >
-          <ion-card-content style="padding-top: 25px; ">
-              <ion-icon name="thermometer-outline" style="float: inline-start; padding-bottom: 0;" ></ion-icon>
-              <ion-text>{{boilerTemperature}} °C</ion-text>
+        <ion-card
+          style="height: 80px; align-content: space-around"
+          (click)="openBluetoothModal()"
+        >
+          <ion-card-content style="padding-top: 25px">
+            <ion-icon
+              name="hardware-chip-outline"
+              style="float: inline-start; padding-bottom: 0"
+              [color]='device ? "dark": "danger"'
+            >
+            </ion-icon>
+            <ion-text style="padding-left: 50px">{{displayName}}</ion-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
+    </ion-row>
+    <ion-row style="align-content: space-around">
       <ion-col>
-        <ion-card style="height: 80px" (click)="openBluetoothModal()">
-          <ion-tab-button style="padding-top: 20px;">
-            <ion-icon
-              name="hardware-chip-outline"
-              style="float: none; font-size: 50px;"
-              [color]='device ? "dark": "danger"'
+        <ion-card style="height: 80px;">
+          <ion-row>
+            <ion-col>
+              <ion-icon
+              name="thermometer-outline"
+              style="align-content: center; font-size: 40px; margin: 15px;"
+
             ></ion-icon>
-          </ion-tab-button>
+          </ion-col>
+          <ion-col>
+            <p>Boiler</p>
+            <p>{{boilerTemperature}} °C</p>
+          </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-col>
+      <ion-col>
+        <ion-card style="height: 80px;">
+          <ion-row>
+            <ion-col>
+              <ion-icon
+              name="thermometer-outline"
+              style="align-content: center; font-size: 40px; margin: 15px;"
+
+            ></ion-icon>
+          </ion-col>
+          <ion-col>
+            <p>Steam</p>
+            <p>{{steamTemperature}} °C</p>
+          </ion-col>
+          </ion-row>
         </ion-card>
       </ion-col>
     </ion-row>
@@ -55,11 +88,11 @@
         <ion-icon name="enter-outline"></ion-icon>
       </ion-card-content>
     </ion-card>
-    <ion-card (click)="openChartModal()" >
+
+    <ion-card (click)="openChartModal()">
       <ion-card-content>
         <ion-icon name="expand-outline"></ion-icon>
       </ion-card-content>
     </ion-card>
   </ion-grid>
 </ion-content>
-

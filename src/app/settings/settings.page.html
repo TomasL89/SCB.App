@@ -32,7 +32,7 @@
   <ion-card (click)="openPowerModal()">
     <ion-card-content>
       <div class="ion-text-center">
-        <p>Power <ion-icon name="power-outline" slot="end"></ion-icon></p>
+        <p>Economy Mode <ion-icon name="leaf-outline" slot="end" [color]='economyModeOn===true ? "success" : "dark"'></ion-icon></p>
       </div>
     </ion-card-content>
   </ion-card>

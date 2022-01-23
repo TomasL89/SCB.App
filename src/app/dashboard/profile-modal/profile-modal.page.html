@@ -5,14 +5,22 @@
 </ion-toolbar>
 
 <ion-content>
-  <ion-card (click)="enableEditMode()" *ngIf="!isEditMode && !isLibraryMode">
+  <!-- todo, you can hide all of thise in a better way -->
+  <ion-card (click)="enableEditMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
     <ion-card-content>
       <div class="ion-text-center">
-        <p>New Profile <ion-icon name="create-outline" slot="end"></ion-icon> </p>
+        <p>New Simple Profile <ion-icon name="create-outline" slot="end"></ion-icon> </p>
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card (click)="enableLibraryMode()" *ngIf="!isEditMode && !isLibraryMode">
+  <ion-card (click)="enableComplexEditMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>New Complex Profile <ion-icon name="color-wand-outline" slot="end"></ion-icon> </p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card (click)="enableLibraryMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
     <ion-card-content>
       <div class="ion-text-center">
         Library
@@ -20,6 +28,131 @@
       </div>
     </ion-card-content>
   </ion-card>
+
+  <form [formGroup]="complexProfileForm" *ngIf="isComplexEditMode">
+    <ion-slides>
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-card style="height: 60px;">
+                <ion-item lines="none" class="ion-text-center">
+                  <ion-label  position="stacked">Profile Name</ion-label>
+                  <ion-input clearInput formControlName="name" placeholder="New profile" type="text" style="color: gray; font-size: small;" required></ion-input>
+                </ion-item>
+              </ion-card>
+            </ion-col>
+            <ion-col>
+              <ion-card >
+                <ion-item lines="none" class="ion-text-center">
+                  <!-- <ion-input clearInput formControlName="boilerTemperature" value="{{boilerSelect.value}}" style="color: gray; font-size: small;" required></ion-input> -->
+                  <ion-item style="align-content: center;">
+                    <ion-icon name="thermometer"></ion-icon>
+                    <ion-select value=90 #boilerSelect formControlName="boilerTemperature">
+                      <ion-select-option value=80>80 °C</ion-select-option>
+                      <ion-select-option value=81>81 °C</ion-select-option>
+                      <ion-select-option value=82>82 °C</ion-select-option>
+                      <ion-select-option value=83>84 °C</ion-select-option>
+                      <ion-select-option value=85>85 °C</ion-select-option>
+                      <ion-select-option value=86>86 °C</ion-select-option>
+                      <ion-select-option value=87>87 °C</ion-select-option>
+                      <ion-select-option value=88>88 °C</ion-select-option>
+                      <ion-select-option value=89>89 °C</ion-select-option>
+                      <ion-select-option value=90>90 °C</ion-select-option>
+                      <ion-select-option value=91>91 °C</ion-select-option>
+                      <ion-select-option value=92>92 °C</ion-select-option>
+                      <ion-select-option value=93>93 °C</ion-select-option>
+                      <ion-select-option value=94>94 °C</ion-select-option>
+                      <ion-select-option value=95>95 °C</ion-select-option>
+                      <ion-select-option value=96>96 °C</ion-select-option>
+                      <ion-select-option value=97>97 °C</ion-select-option>
+                      <ion-select-option value=98>98 °C</ion-select-option>
+                      <ion-select-option value=99>99 °C</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </ion-item>
+
+            </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+      <ion-slide>
+        <ion-grid style="padding-right: 5%;">
+          <ion-row>
+            <ion-col size="8">
+              <ion-card style="height: 300px;">
+                <ion-card-content>
+                  <canvas baseChart [datasets]="datasets" [chartType]="'line'" [options]="chartOptions" [labels]="dataLabels"></canvas>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+            <ion-col size="4">
+              <ion-card style="height: 300px;">
+                <ion-card-content style="align-content: center;">
+                  <ion-row>
+                    <!-- <ion-item style="align-content: center;">
+                      <ion-icon name="thermometer"></ion-icon>
+                      <ion-select value=90>
+                        <ion-select-option value=80>80 °C</ion-select-option>
+                        <ion-select-option value=81>81 °C</ion-select-option>
+                        <ion-select-option value=82>82 °C</ion-select-option>
+                        <ion-select-option value=83>84 °C</ion-select-option>
+                        <ion-select-option value=85>85 °C</ion-select-option>
+                        <ion-select-option value=86>86 °C</ion-select-option>
+                        <ion-select-option value=87>87 °C</ion-select-option>
+                        <ion-select-option value=88>88 °C</ion-select-option>
+                        <ion-select-option value=89>89 °C</ion-select-option>
+                        <ion-select-option value=90>90 °C</ion-select-option>
+                        <ion-select-option value=91>91 °C</ion-select-option>
+                        <ion-select-option value=92>92 °C</ion-select-option>
+                        <ion-select-option value=93>93 °C</ion-select-option>
+                        <ion-select-option value=94>94 °C</ion-select-option>
+                        <ion-select-option value=95>95 °C</ion-select-option>
+                        <ion-select-option value=96>96 °C</ion-select-option>
+                        <ion-select-option value=97>97 °C</ion-select-option>
+                        <ion-select-option value=98>98 °C</ion-select-option>
+                        <ion-select-option value=99>99 °C</ion-select-option>
+                      </ion-select>
+                    </ion-item> -->
+                  </ion-row>
+                  <ion-row style="padding-top: 5%">
+                    <ion-grid style="padding-right: 5%;">
+                      <ion-row>
+                        <ion-col>
+                        </ion-col>
+                        <ion-col (click)="adjustPressure('up')">
+                          <ion-icon name="arrow-up-circle-outline" style="font-size: 50px;"></ion-icon>
+                        </ion-col>
+                        <ion-col></ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col (click)="adjustPressure('left')">
+                          <ion-icon name="arrow-back-circle-outline" style="font-size: 50px;"></ion-icon>
+                        </ion-col>
+                        <ion-col>
+                        </ion-col>
+                        <ion-col (click)="adjustPressure('right')">
+                          <ion-icon name="arrow-forward-circle-outline" style="font-size: 50px;"></ion-icon>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col></ion-col>
+                        <ion-col (click)="adjustPressure('down')">
+                          <ion-icon name="arrow-down-circle-outline" style="font-size: 50px;"></ion-icon>
+                        </ion-col>
+                        <ion-col></ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-row>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+    </ion-slides>
+  </form>
 
   <form [formGroup]="profileForm" *ngIf="isEditMode">
     <ion-card style="height: 60px;">
@@ -34,7 +167,7 @@
           <mat-panel-title style="padding-left: 20%">
             <ion-item lines="none" class="ion-text-center">
               <ion-label position="stacked">Boiler Temperature</ion-label>
-              <ion-input formControlName="boilerTemperature" value="{{boiler.value}} ℃" readonly style="color: gray; font-size: small;"></ion-input>
+              <ion-input formControlName="boilerTemperature" value="{{boiler.value}}" readonly style="color: gray; font-size: small;"></ion-input>
             </ion-item>
           </mat-panel-title>
         </mat-expansion-panel-header>

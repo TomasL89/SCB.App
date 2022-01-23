@@ -8,6 +8,11 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
   styleUrls: ['./chart-modal.page.scss'],
 })
 export class ChartModalPage implements OnInit {
+  boilerTemp: number = 115;
+  steamTemp: number = 115;
+  pumpPressure: number = 10;
+  boilerPower: number = 90;
+  pumpPower: number = 90;
 
   constructor(private modalController: ModalController, private screenOrientation: ScreenOrientation) { }
 

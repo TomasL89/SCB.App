@@ -2,19 +2,19 @@ export class DataPayload {
   cycleTime: number;
   boilerTemp: number;
   pumpPressure: number;
-  cycleStage: string;
+  steamTemp: number;
 
   constructor(
     cycleTime: number,
     boilerTemp: number,
     pumpPressure: number,
-    cycleStage: number) {
+    steamTemp: number) {
       this.cycleTime = cycleTime;
       this.boilerTemp = boilerTemp;
       this.pumpPressure = pumpPressure;
-      this.cycleStage = this.convertStageFromNumber(cycleStage);
+      this.steamTemp = steamTemp;
     }
-
+// todo later
     private convertStageFromNumber(cycleStage: number): string {
       switch (cycleStage) {
         case 1:

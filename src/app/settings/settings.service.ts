@@ -33,8 +33,8 @@ export class SettingsService {
           "00000000-0000-0000-0000-000000000000",
           0.0,
           0.0,
-          0,
-          ""
+          "15",
+          false
         )
         console.log(newSettings);
         await this.storage.set("settings", newSettings);
@@ -66,13 +66,14 @@ export class SettingsService {
     }
   }
 
-  async setPower(powerOnSchedule: string, powerTimeout: string) {
+  async setPower(ecoModeOn: boolean, powerTimeout: string) {
     const settings = await this.storage.get("settings") as Settings;
     console.log("updating power settings");
+    console.log(settings);
 
     if (settings) {
-      settings.powerSchedule = powerOnSchedule;
-      settings.powerTimeout = +powerTimeout.split(":")[1];
+      settings.ecoModeOn = ecoModeOn;
+      settings.powerTimeout = powerTimeout;
       await this.storage.set("settings", settings);
     }
   }

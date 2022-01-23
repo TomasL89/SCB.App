@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Settings } from '../../settings.model';
 import { SettingsService } from '../../settings.service';
 
 @Component({
@@ -8,22 +9,29 @@ import { SettingsService } from '../../settings.service';
   styleUrls: ['./power-modal.page.scss'],
 })
 export class PowerModalPage implements OnInit {
-  powerOnSchedule = "1990-02-19T06:00"
   powerTimeout = "1990-02-19T06:00";
-  constructor(private modalController: ModalController, private settingsService: SettingsService) { }
+  ecoModeOn: boolean;
+  constructor(private modalController: ModalController, private settingsService: SettingsService) {
+  }
 
   ngOnInit() {
+    this.settingsService.settings.subscribe(x => this.initialiseSettings(x));
   }
 
   dismiss() {
     this.modalController.dismiss();
   }
 
+  private initialiseSettings(settings: Settings) {
+    console.log('Initialising');
+    console.log(settings);
+    this.powerTimeout = settings.powerTimeout;
+    this.ecoModeOn = settings.ecoModeOn;
+  }
+
   savePowerSettings() {
-    const scheduledHours = this.powerOnSchedule.split(":")[0];
-    const scheduledMinutes = this.powerOnSchedule.split(":")[1];
-    console.log(`${this.powerTimeout.split(":")[1]} minutes`);
-    this.settingsService.setPower(this.powerOnSchedule, this.powerTimeout);
+    console.log(`Eco mode: ${this.ecoModeOn}`);
+    this.settingsService.setPower(this.ecoModeOn, this.powerTimeout);
   }
 
 }

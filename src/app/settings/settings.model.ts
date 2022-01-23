@@ -2,20 +2,20 @@ export class Settings{
   smartDeviceId: string;
   firmwareVersion: number;
   appVersion: number;
-  powerTimeout: number;
-  powerSchedule: string;
+  powerTimeout: string;
+  ecoModeOn: boolean;
 
   constructor(
     smartDeviceId: string,
     firmwareVersion: number,
     appVersion: number,
-    powerTimeout: number,
-    powerSchedule: string
+    powerTimeout: string,
+    powerSchedule: boolean
     ) {
     this.smartDeviceId = smartDeviceId;
     this.firmwareVersion = firmwareVersion;
     this.appVersion = appVersion;
     this.powerTimeout = powerTimeout;
-    this.powerSchedule = powerSchedule;
+    this.ecoModeOn = powerSchedule;
   }
 }

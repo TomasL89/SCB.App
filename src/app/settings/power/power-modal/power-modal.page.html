@@ -6,22 +6,35 @@
 <ion-content>
   <ion-card>
     <ion-card-content class="ion-text-center">
-      <ion-item lines="none">
-        <ion-label><ion-icon name="alarm-outline" style="font-size: 30px;"></ion-icon></ion-label>
-        <ion-datetime displayFormat="h:mm A" picker-format="h:mm A" [(ngModel)]="powerOnSchedule"></ion-datetime>
-      </ion-item>
+          <ion-row>
+            <ion-col>
+              <ion-icon name="timer-outline" style="font-size: 30px;"></ion-icon>
+            </ion-col>
+            <ion-col>
+              Timeout (mins)
+            </ion-col>
+            <ion-col>
+              <ion-datetime displayFormat="mm" picker-format="mm" [(ngModel)]="powerTimeout" minuteValues="0,15,30,45"></ion-datetime>
+            </ion-col>
+          </ion-row>
     </ion-card-content>
   </ion-card>
   <ion-card>
     <ion-card-content class="ion-text-center">
-      <ion-item lines="none">
-        <ion-label><ion-icon name="timer-outline" style="font-size: 30px;"></ion-icon></ion-label>
-        <ion-datetime displayFormat="mm" picker-format="mm" [(ngModel)]="powerTimeout" minuteValues="0,15,30,45"></ion-datetime>
-      </ion-item>
+          <ion-row>
+            <ion-col>
+              <ion-icon name="leaf-outline" style="font-size: 30px;"></ion-icon>
+            </ion-col>
+            <ion-col>
+              Eco Mode
+            </ion-col>
+            <ion-col>
+              <ion-toggle color="success" [(ngModel)]="ecoModeOn"></ion-toggle>
+            </ion-col>
+          </ion-row>
     </ion-card-content>
   </ion-card>
 </ion-content>
-
 
 <!-- <ion-item>
   <ion-label>Start Time</ion-label>
