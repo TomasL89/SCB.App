@@ -1,0 +1,7 @@
+{
+  "name": "smart-coffee-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-icon
+    *ngIf="foundDevice"
+    name="home-outline"
+    (click)="dismiss()"
+    class="ion-padding"
+    style="font-size: 30px"
+  ></ion-icon>
+  <ion-icon
+    *ngIf="!foundDevice"
+    name="arrow-back-outline"
+    (click)="dismiss()"
+    class="ion-padding"
+    style="float: left; font-size: 30px"
+  ></ion-icon>
+</ion-header>
+
+<ion-content class="ion-text-center">
+  <ion-card style="height: 200px;">
+    <ion-card-content>
+      <!-- <ion-refresher slot="fixed" pullFactor="0.5" (ionRefresh)="doRefresh()"> -->
+        <!-- <ion-refresher-content refreshingSpinner="none"> -->
+          <div *ngIf="isScanning">
+            <h3>Looking for a Smart Coffee device</h3>
+            <ion-spinner
+              name="crescent"
+              style="transform: scale(4); padding-top: 40%"
+            ></ion-spinner>
+          </div>
+          <div *ngIf="!isScanning && !foundDevice">
+            <h3>
+              Could not find a compatible device, please check that the machine
+              has power
+            </h3>
+          </div>
+          <div *ngIf="foundDevice && !isScanning">
+            <h3>Found a compatible device</h3>
+            {{this.device.name}}
+          </div>
+        <!-- </ion-refresher-content> -->
+      <!-- </ion-refresher> -->
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header> {{device.name}} </ion-card-header>
+    <ion-card-content>
+      <ion-item lines="none">
+        <p>Cycle Time: {{payload.cycleTime}}</p>
+      </ion-item>
+      <ion-item lines="none">
+        <p>Boiler Temp: {{payload.boilerTemp}}</p>
+      </ion-item>
+      <ion-item lines="none">
+        <p>Pump Pressure: {{payload.pumpPressure}}</p>
+      </ion-item>
+      <ion-item lines="none">
+        <p>Cycle Stage {{payload.cycleStage}}</p>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <ion-button (click)="connect()">Connect</ion-button>
+      <ion-button (click)="startData()">Start</ion-button>
+      <ion-button (click)="stopData()">Stop</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

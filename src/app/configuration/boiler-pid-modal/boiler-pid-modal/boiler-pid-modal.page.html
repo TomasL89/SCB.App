@@ -1,0 +1,67 @@
+<ion-fab vertical="top" horizontal="start" slot="fixed" >
+  <ion-fab-button size="small" color="light" (click)="dismiss()">
+    <ion-icon name="arrow-back-circle"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" >
+  <ion-fab-button size="small" color="light" (click)="sendPidSettings()">
+    <ion-icon name="push-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-fab vertical="top" horizontal="end">
+  <ion-fab-button size="small" color="light">
+    <ion-icon name="flask-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+
+<ion-content>
+  <ion-grid style="padding-right: 5%;">
+    <!-- todo fix this as it won't work on other models -->
+    <ion-row style="padding-top: 25px;">
+      <ion-col size="9">
+        <ion-card style="margin-top: 30px; margin-bottom: 5px; margin-right: 0px;">
+          <ion-card-content>
+            <div>
+              <canvas baseChart [datasets]="dataSets" [chartType]="'line'" [options]="chartOptions" [labels]="dataLabels"></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="3">
+          <ion-card style="margin-top: 30px; ">
+            <ion-card-content style="padding-left: 0px;">
+              <ion-item lines="none" style="padding-left: 0px;">
+                <ion-icon name="thermometer-outline" style="font-size: 28px; padding-right: 20px;"></ion-icon>
+                <ion-input placeholder="85"></ion-input>°C
+              </ion-item>
+              <ion-item lines="none">
+                <ion-icon name="water-outline" style="font-size: 28px; padding-right: 20px;"></ion-icon>
+                <ion-toggle color="light"></ion-toggle>
+              </ion-item>
+            </ion-card-content>
+
+          </ion-card>
+          <ion-card>
+              <ion-item lines="none">
+                <ion-label>KP</ion-label>
+                <ion-input placeholder=".001" type="text"></ion-input>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-label>KI</ion-label>
+                <ion-input placeholder=".001" type="text"></ion-input>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-label>KD</ion-label>
+                <ion-input placeholder=".001" type="text"></ion-input>
+              </ion-item>
+
+          </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

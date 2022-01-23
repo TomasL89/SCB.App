@@ -1,0 +1,58 @@
+<ion-header style="height: 50px;">
+  <ion-icon
+    name="arrow-back-outline"
+    (click)="dismiss()"
+    class="ion-padding"
+    style="font-size: 30px"
+  ></ion-icon>
+</ion-header>
+
+<ion-content>
+  <ion-grid style="padding-right: 5%;">
+    <ion-row>
+      <ion-col size="9">
+        <ion-card>
+          <ion-card-content>
+            <app-chart></app-chart>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="3">
+        <ion-card >
+          <ion-card-content style="align-content: center;">
+            <ion-row>
+              <div class="dash-item">
+                <p class="dash-label">Boiler</p>
+                <p>{{boilerTemp}} °C</p>
+              </div>
+            </ion-row>
+            <ion-row>
+              <div class="dash-item">
+                <p class="dash-label">Steam</p>
+                <p>{{steamTemp}} °C</p>
+              </div>
+            </ion-row>
+            <ion-row>
+              <div class="dash-item">
+                <p class="dash-label">Pump</p>
+                <p>{{pumpPressure}} Bar</p>
+              </div>
+            </ion-row>
+            <ion-row>
+              <div class="dash-item">
+                <p class="dash-label">Boiler</p>
+                <p>{{boilerPower}} %</p>
+              </div>
+            </ion-row>
+            <ion-row>
+              <div class="dash-item">
+                <p class="dash-label">Pump</p>
+                <p>{{pumpPower}} %</p>
+              </div>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
