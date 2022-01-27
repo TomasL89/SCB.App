@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: 'pump-pid-modal',
     loadChildren: () => import('./pump-pid-modal/pump-pid-modal/pump-pid-modal.module').then( m => m.PumpPidModalPageModule)
+  },
+  {
+    path: 'pump-pressure-calibration-modal',
+    loadChildren: () => import('./pump-pressure-calibration-modal/pump-pressure-calibration-modal.module').then( m => m.PumpPressureCalibrationModalPageModule)
   }
 ];
 

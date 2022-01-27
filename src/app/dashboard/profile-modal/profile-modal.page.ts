@@ -26,12 +26,27 @@ export class ProfileModalPage implements AfterViewInit {
   isLibraryMode: boolean;
   isComplexEditMode: boolean;
   complexProfile: Array<number> = new Array(60).fill(0);
+  selectedComplexProfile: ComplexProfile
+  // defaultComplexProfiles: Array<[string, Array<number>]> = 
+  // [
+  //   ['Flat 9', new Array(60).fill(9)],
+  //   ['Preinfusion Flat 9', new Array(60).fill(3,0,9).fill(9,10,29)]
+  // ]
+  defaultComplexProfiles: Array<ComplexProfile> = 
+  [
+    new ComplexProfile('Flat 9', new Array(60).fill(9)),
+    new ComplexProfile('Flat 9 Preinfusion', new Array(60).fill(3,0,9).fill(9,9,29))
+  ]
 
   private profilePosition = 0;
   private pointBackgroundColors = ['green']
 
   datasets: ChartDataSets[] = [
-    { data: this.complexProfile, label: 'Pressure', fill:true, yAxisID: 'Bar', pointBackgroundColor: this.pointBackgroundColors.fill('red', 1, 59)}
+    { data: this.complexProfile, 
+      label: 'Pressure', 
+      fill:true, 
+      yAxisID: 'Bar', 
+      pointBackgroundColor: this.pointBackgroundColors.fill('red', 1, 59)}
   ]
 
   chartOptions: ChartOptions = {
@@ -45,6 +60,9 @@ export class ProfileModalPage implements AfterViewInit {
           min: 0
         },
       }],
+    },
+    plugins: {
+      dragData: true
     }
     }
 
@@ -103,6 +121,18 @@ export class ProfileModalPage implements AfterViewInit {
     if (this.isComplexEditMode) {
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
     }
+  }
+
+  updateChart(event) {
+    this.complexProfile = event.detail.value.profile;
+    this.chart.datasets[0].data = this.complexProfile;
+    this.chart.update();
+  }
+
+  updateBaseLinePressure(event) {
+    this.complexProfile = new Array(60).fill(+event.detail.value);
+    this.chart.datasets[0].data = this.complexProfile;
+    this.chart.update();
   }
 
   enableLibraryMode() {
@@ -178,5 +208,15 @@ export class ProfileModalPage implements AfterViewInit {
 
   editProfile(id: string) {
 
+  }
+}
+
+class ComplexProfile {
+  name: String
+  profile: Array<number>
+
+  constructor(name, profile) {
+    this.name = name;
+    this.profile = profile
   }
 }

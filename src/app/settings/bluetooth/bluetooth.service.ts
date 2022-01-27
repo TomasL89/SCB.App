@@ -30,6 +30,8 @@ export class BluetoothService implements OnDestroy {
   private profilePayloadCharacteristicId = 'afe6a8da-e397-11eb-ba80-0242ac130004';
   private heaterTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
   private pumpTuningPayloadCharacteristicID = '5b74e49a-e397-11eb-ba80-0242ac130004';
+  private pumpCalibrationCharacteristicID = '57c1ff4f-c7b1-41ad-a58e-421e77fdbd37';
+  private togglePumpCalibrationCharacteristic = 'acbd6ca0-925f-4484-8471-f7c3f5e98ec1';
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
@@ -145,6 +147,65 @@ export class BluetoothService implements OnDestroy {
         console.log(`failed with response ${rejected}`);
       });
     }
+  }
+
+  startPumpCalibrationMode() {
+    this.togglePumpCalibrationMode('1')
+  }
+
+  stopPumpCalibrationMode() {
+    this.togglePumpCalibrationMode('0');
+  }
+
+  sendPumpPowerToDevice(reading: string) {
+    const dataToSend = "s:"+reading;
+    const payload = new TextEncoder().encode(dataToSend);
+
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    });
+  }
+
+  storePowerSettingOnDevice(powerSetting: string) {
+    const dataToSend = "c:"+powerSetting;
+
+    const payload = new TextEncoder().encode(dataToSend);
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    });
+  }
+
+  sendPressurePoint(pressurePoint: string) {
+    const dataToSend = "p:"+pressurePoint;
+
+    const payload = new TextEncoder().encode(dataToSend);
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    }); 
+  }
+
+  finishCalibrationAndStore() {
+    const payload = new TextEncoder().encode("f");
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    }); 
+  }
+
+  private togglePumpCalibrationMode(enabled: string) {
+    const payload = new TextEncoder().encode(enabled);
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    });
   }
 
   private async scanDevicesAsync() {

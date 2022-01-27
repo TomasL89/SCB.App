@@ -3,6 +3,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ModalController } from '@ionic/angular';
 import { BoilerPidModalPage } from './boiler-pid-modal/boiler-pid-modal/boiler-pid-modal.page';
 import { PumpPidModalPage } from './pump-pid-modal/pump-pid-modal/pump-pid-modal.page';
+import { PumpPressureCalibrationModalPage } from './pump-pressure-calibration-modal/pump-pressure-calibration-modal.page';
 
 @Component({
   selector: 'app-configuration',
@@ -30,6 +31,13 @@ export class ConfigurationPage implements OnInit {
   async openPumpPidModal() {
     const modal = await this.modalController.create({
       component: PumpPidModalPage
+    });
+    return await modal.present();
+  }
+
+  async openPumpCalibrationModal() {
+    const modal = await this.modalController.create({
+      component: PumpPressureCalibrationModalPage
     });
     return await modal.present();
   }
