@@ -6,8 +6,11 @@ import { ProfileService } from 'src/app/profile/profile.service';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
-import { ChartConfiguration, ChartDataSets, ChartOptions } from 'chart.js';
+import { ChartConfiguration, ChartDataSets, ChartOptions, Chart } from 'chart.js';
 import { BaseChartDirective, Label } from 'ng2-charts';
+import * as Dragable from "chartjs-plugin-dragdata"
+import * as Annotation from "chartjs-plugin-annotation";
+import { ChangeContext, Options } from '@angular-slider/ngx-slider';
 
 
 @Component({
@@ -17,8 +20,26 @@ import { BaseChartDirective, Label } from 'ng2-charts';
 })
 export class ProfileModalPage implements AfterViewInit {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  
+  pressureValueOptions: Options = {
+    floor: 0,
+    ceil: 12,
+    vertical: true,
+    hidePointerLabels: true,
+    hideLimitLabels: true
+  }
+  pressureValue: number = 0;
 
+  pressureIndexOptions: Options = {
+    floor: 0,
+    ceil: 60,
+    hidePointerLabels: true,
+    hideLimitLabels: true
+  }
 
+  baselinePressure = 0;
+  showProfilePlot = false;
+  pressureIndex: number = 0;
   profileSubscription: Subscription;
   currentProfile: Profile;
   profiles: Array<Profile>;
@@ -62,15 +83,32 @@ export class ProfileModalPage implements AfterViewInit {
       }],
     },
     plugins: {
-      dragData: true
+      autocolors: false,
+      annotation: {
+
+      },
+      dragData : {
+        round: 1,
+        showTooltip: true,
+        onDragStart: function(e, element) {
+          console.log(`${e} ${element}`);
+        },
+        onDrag: function(e, datasetIndex, index, value) {
+          console.log(`${e} ${datasetIndex} ${index} ${value}`);
+        },
+        onDragEnd: function(e, datasetIndex, index, value) {
+          console.log(`${e} ${datasetIndex} ${index} ${value}`);
+        }
+      }
     }
-    }
+  }
 
   dataLabels: Label[] = Array.from({length: 60}, (_, i) => (i + 1).toString());
 
   profileForm = new FormGroup({
     name: new FormControl(''),
     boilerTemperature: new FormControl(''),
+    preinfusionPressure: new FormControl(''),
     pumpPressure: new FormControl(''),
     preInfusionTime: new FormControl(''),
     shotTime: new FormControl('')
@@ -102,6 +140,8 @@ export class ProfileModalPage implements AfterViewInit {
       console.log(profiles);
     });
 
+    Chart.pluginService.register(Annotation);
+    Chart.pluginService.register(Dragable);
   }
 
   dismiss() {
@@ -118,8 +158,47 @@ export class ProfileModalPage implements AfterViewInit {
 
   enableComplexEditMode() {
     this.isComplexEditMode = !this.isComplexEditMode;
-    if (this.isComplexEditMode) {
+    // if (this.isComplexEditMode) {
+    //   this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+    // }
+  }
+
+  onPointerDown() {
+    console.log('point is down')
+  }
+
+  onPointerUp() {
+    console.log('pointer is up');
+  }
+
+  onPressureChange(changeContext: ChangeContext) {
+    this.complexProfile[this.profilePosition] = changeContext.value;
+    console.log(this.complexProfile);
+    this.chart?.update();
+  }
+
+  onPressureIndexChange(changeContext: ChangeContext) {
+    this.profilePosition = changeContext.value;
+    this.chart.datasets[0].pointBackgroundColor[this.profilePosition] = 'green'
+
+    for (var i = 0; i < 60; i++) {
+      if (i == this.profilePosition) {
+        continue;
+      }
+      this.chart.datasets[0].pointBackgroundColor[i] = 'red'
+
+    }
+    this.chart?.update();
+
+  }
+
+  toggleProfilePlot() {
+    this.showProfilePlot = !this.showProfilePlot;
+    if (this.isComplexEditMode && this.showProfilePlot) {
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+      this.complexProfile = new Array(60).fill(this.baselinePressure);
+      this.chart.datasets[0].data = this.complexProfile;
+      this.chart?.update();
     }
   }
 
@@ -130,9 +209,8 @@ export class ProfileModalPage implements AfterViewInit {
   }
 
   updateBaseLinePressure(event) {
-    this.complexProfile = new Array(60).fill(+event.detail.value);
-    this.chart.datasets[0].data = this.complexProfile;
-    this.chart.update();
+    console.log(`Updating to ${event.detail.value}`)
+    
   }
 
   enableLibraryMode() {
@@ -146,10 +224,11 @@ export class ProfileModalPage implements AfterViewInit {
     const name = this.profileForm.get('name').value;
     const boilerTemp = this.profileForm.get('boilerTemperature').value.replace(/\D/g,'');
     const pumpPressure = this.profileForm.get('pumpPressure').value.replace(/\D/g,'');
+    const preinfusionPressure = this.profileForm.get('preinfusionPressure').value.replace(/\D/g,'');
     const preInfusionTime = this.profileForm.get('preInfusionTime').value.replace(/\D/g,'');
     const shotTime = this.profileForm.get('shotTime').value.replace(/\D/g,'');
     let id = uuidv4();
-    const newProfile = new Profile(String(id) ,name, boilerTemp, pumpPressure, preInfusionTime, shotTime, false);
+    const newProfile = new Profile(String(id) ,name, boilerTemp, pumpPressure, preinfusionPressure, preInfusionTime, shotTime, false);
 
     this.profileService.createNewProfile(newProfile);
     this.currentProfile = newProfile;

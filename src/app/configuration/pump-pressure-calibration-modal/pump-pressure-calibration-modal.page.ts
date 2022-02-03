@@ -8,12 +8,13 @@ import { BluetoothService } from 'src/app/settings/bluetooth/bluetooth.service';
   styleUrls: ['./pump-pressure-calibration-modal.page.scss'],
 })
 export class PumpPressureCalibrationModalPage implements OnInit {
-
+  
   isCalibrating = false;
   pressureGaugeReading = 0.0;
   pressureSetting = 1;
+  pumpPowerSetting = 0;
 
-  private pumpPowerSetting = 0;
+  private buffer = new Array<number>();
 
   constructor(
     private modalController: ModalController,
@@ -26,23 +27,55 @@ export class PumpPressureCalibrationModalPage implements OnInit {
     this.modalController.dismiss();
   }
 
-  updatePressureGuageReading() {
-    this.pressureGaugeReading = +this.pressureSetting;
-    this.bleService.sendPressurePoint(this.pressureSetting.toString());
-  }
+  // updatePressureGuageReading() {
+  //   this.pressureSetting = +this.pressureSetting;
+  //   this.bleService.sendPressurePoint(this.pressureSetting.toString());
+  // }
 
   increasePressure() {
-    this.pumpPowerSetting += 5;
+    if (this.pumpPowerSetting >= 100) {
+      return;
+    }
+    this.pumpPowerSetting += 2;
     this.sendPumpPower();
   }
 
   decreasePressure() {
-    this.pumpPowerSetting -= 5;
+    if (this.pumpPowerSetting <= 0) {
+      return;
+    }
+    this.pumpPowerSetting -= 2;
     this.sendPumpPower();
   }
+
+  nextPressurePoint() {
+    if (this.pressureSetting < 12) {
+      this.pressureSetting += 1;
+    }
   
-  storePowerSettingOnDevice() {
-    this.bleService.storePowerSettingOnDevice(this.pumpPowerSetting.toString());
+    if (this.buffer[this.pressureSetting] > 0 ){
+      this.pumpPowerSetting = this.buffer[this.pressureSetting];
+      this.sendPumpPower();
+    }
+    else {
+      this.increasePressure();
+    }
+
+    //this.bleService.sendPressurePoint(this.pressureSetting.toString());
+
+    //this.storePowerSettingOnDevice();
+  }
+
+  previousPressurePoint() {
+
+    if (this.pressureSetting == 0) {
+      return;
+    }
+    //this.bleService.sendPressurePoint(this.pressureSetting.toString());
+
+    this.pressureSetting -= 1;
+    this.pumpPowerSetting = this.buffer[this.pressureSetting];
+    //this.storePowerSettingOnDevice();
   }
 
   toggleCalibrationMode() {
@@ -63,8 +96,13 @@ export class PumpPressureCalibrationModalPage implements OnInit {
   }
 
   private sendPumpPower() {
+    this.buffer[this.pressureSetting] = this.pumpPowerSetting;
     console.log(`Sending ${this.pumpPowerSetting.toString()}`);
-    this.bleService.sendPumpPowerToDevice(this.pumpPowerSetting.toString());
+    this.bleService.sendPumpPowerToDevice(this.pressureSetting, this.pumpPowerSetting);
   }
+
+  // private storePowerSettingOnDevice() {
+  //   this.bleService.storePowerSettingOnDevice(this.pumpPowerSetting.toString());
+  // }
 
 }

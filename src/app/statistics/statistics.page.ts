@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StatisticsPage implements OnInit {
 
+  val1: 0;
   constructor() { }
 
   ngOnInit() {

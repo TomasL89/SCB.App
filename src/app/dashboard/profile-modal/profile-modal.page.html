@@ -1,7 +1,9 @@
+<!-- <ion-toolbar *ngIf="!isComplexEditMode"> -->
 <ion-toolbar>
   <ion-icon *ngIf="!isEditMode" name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left;"></ion-icon>
   <ion-icon *ngIf="isEditMode" name="close" (click)="enableEditMode()" class="ion-padding" style="float: left"></ion-icon>
   <ion-icon *ngIf="isEditMode" name="save-outline" (click)="saveProfile()"  class="ion-padding" style="float: right;"></ion-icon>
+  <ion-icon *ngIf="isComplexEditMode && !showProfilePlot" name="analytics-outline" (click)="toggleProfilePlot()"  class="ion-padding" style="float: right;"></ion-icon>
 </ion-toolbar>
 
 <ion-content>
@@ -13,13 +15,13 @@
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card (click)="enableComplexEditMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
+  <!-- <ion-card (click)="enableComplexEditMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
     <ion-card-content>
       <div class="ion-text-center">
         <p>New Advanced Profile <ion-icon name="color-wand-outline" slot="end"></ion-icon> </p>
       </div>
     </ion-card-content>
-  </ion-card>
+  </ion-card> -->
   <ion-card (click)="enableLibraryMode()" *ngIf="!isEditMode && !isLibraryMode && !isComplexEditMode">
     <ion-card-content>
       <div class="ion-text-center">
@@ -30,25 +32,17 @@
   </ion-card>
 
   <form [formGroup]="complexProfileForm" *ngIf="isComplexEditMode">
-    <ion-slides>
-      <ion-slide>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
+        <ion-grid *ngIf="!showProfilePlot" class="ion-no-padding">
               <ion-card>
                 <ion-item lines="none">
                   <ion-label  position="stacked">Profile Name</ion-label>
-                  <ion-input clearInput formControlName="name" placeholder="New profile" type="text" style="color: gray; font-size: small;" required></ion-input>
+                  <ion-input clearInput formControlName="name" type="text" style="color: gray; font-size: small;" required></ion-input>
                 </ion-item>
               </ion-card>
-            </ion-col>
-            <ion-col>
               <ion-card>
-                <!-- <ion-input clearInput formControlName="boilerTemperature" value="{{boilerSelect.value}}" style="color: gray; font-size: small;" required></ion-input> -->
-                <ion-item>
+                <ion-item lines="none">
                   <ion-label position="stacked">Boiler Temperature</ion-label>
-                  <!-- <ion-icon name="thermometer"></ion-icon> -->
-                  <ion-select value=90 #boilerSelect formControlName="boilerTemperature" placeholder="Select temperature" style="font-size: small;">
+                  <ion-select value=90 #boilerSelect formControlName="boilerTemperature" style="font-size: small;">
                     <ion-select-option value=80>80 °C</ion-select-option>
                     <ion-select-option value=81>81 °C</ion-select-option>
                     <ion-select-option value=82>82 °C</ion-select-option>
@@ -71,95 +65,88 @@
                   </ion-select>
                 </ion-item>
               </ion-card>
-            </ion-col>
-            <ion-col>
               <ion-card>
-                  <ion-item>
-                    <ion-label position="stacked">Baseline Pressure</ion-label>
-                    <ion-select value=8 placeholder="Select Pressure" style="font-size: small;" (ionChange)="updateBaseLinePressure($event)">
-                      <ion-select-option value=0>0 Bar</ion-select-option>
-                      <ion-select-option value=1>1 Bar</ion-select-option>
-                      <ion-select-option value=2>2 Bar</ion-select-option>
-                      <ion-select-option value=3>3 Bar</ion-select-option>
-                      <ion-select-option value=4>4 Bar</ion-select-option>
-                      <ion-select-option value=5>5 Bar</ion-select-option>
-                      <ion-select-option value=6>6 Bar</ion-select-option>
-                      <ion-select-option value=7>7 Bar</ion-select-option>
-                      <ion-select-option value=8>8 Bar</ion-select-option>
-                      <ion-select-option value=9>9 Bar</ion-select-option>
-                      <ion-select-option value=10>10 Bar</ion-select-option>
-                      <ion-select-option value=11>11 Bar</ion-select-option>
-                      <ion-select-option value=12>12 Bar</ion-select-option>
-                    </ion-select>
-                  </ion-item>
+                <ion-item lines="none">
+                  <ion-label position="stacked">Profile Template</ion-label>
+                  <ion-select (ionChange)="updateChart($event)" [(ngModel)]="selectedComplexProfile" style="font-size: small;">
+                    <ion-select-option *ngFor="let defaultComplexProfile of defaultComplexProfiles" [value]="defaultComplexProfile">
+                      {{defaultComplexProfile.name}}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
               </ion-card>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-card>
-              <ion-item>
-                <ion-label position="stacked">Profile Template</ion-label>
-                <ion-select (ionChange)="updateChart($event)" [(ngModel)]="selectedComplexProfile" placeholder="Select a profile template" style="font-size: small;">
-                  <ion-select-option *ngFor="let defaultComplexProfile of defaultComplexProfiles" [value]="defaultComplexProfile">
-                    {{defaultComplexProfile.name}}
-                  </ion-select-option>
+              <!-- <ion-card>
+                <ion-item lines="none">
+                  <ion-label position="stacked">Preinfusion Start</ion-label>
+                  <ion-select value=8 style="font-size: small;" (ionChange)="updatePreinfusionPressure($event)">
+                    <ion-select-option value=0>0 Bar</ion-select-option>
+                    <ion-select-option value=1>1 Bar</ion-select-option>
+                    <ion-select-option value=2>2 Bar</ion-select-option>
+                    <ion-select-option value=3>3 Bar</ion-select-option>
+                    <ion-select-option value=4>4 Bar</ion-select-option>
+                    <ion-select-option value=5>5 Bar</ion-select-option>
+                    <ion-select-option value=6>6 Bar</ion-select-option>
+                    <ion-select-option value=7>7 Bar</ion-select-option>
+                  </ion-select>
+                </ion-item>
+            </ion-card> -->
+             <ion-card>
+              <ion-item lines="none">
+                <ion-label position="stacked">Baseline Pressure</ion-label>
+                <ion-select value=8 placeholder="Select Pressure" style="font-size: small;" [(ngModel)]="baselinePressure">
+                  <ion-select-option value=0>0 Bar</ion-select-option>
+                  <ion-select-option value=1>1 Bar</ion-select-option>
+                  <ion-select-option value=2>2 Bar</ion-select-option>
+                  <ion-select-option value=3>3 Bar</ion-select-option>
+                  <ion-select-option value=4>4 Bar</ion-select-option>
+                  <ion-select-option value=5>5 Bar</ion-select-option>
+                  <ion-select-option value=6>6 Bar</ion-select-option>
+                  <ion-select-option value=7>7 Bar</ion-select-option>
+                  <ion-select-option value=8>8 Bar</ion-select-option>
+                  <ion-select-option value=9>9 Bar</ion-select-option>
+                  <ion-select-option value=10>10 Bar</ion-select-option>
+                  <ion-select-option value=11>11 Bar</ion-select-option>
+                  <ion-select-option value=12>12 Bar</ion-select-option>
                 </ion-select>
               </ion-item>
             </ion-card>
-          </ion-row>
+            <!-- <ion-row>
+              <ion-col size="6">
+                <ion-item lines="none" class="ion-text-center">
+                  <ion-icon name="arrow-back-outline" (click)="dismiss()"></ion-icon>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6">
+                <ion-item lines="none" class="ion-text-center">
+                  <ion-icon name="analytics-outline" (click)="toggleProfilePlot()"></ion-icon>
+                </ion-item>
+              </ion-col>
+            </ion-row> -->
         </ion-grid>
-      </ion-slide>
-      <ion-slide>
-        <ion-grid style="padding-right: 5%;">
-          <ion-row>
-            <ion-col size="8">
-              <ion-card style="height: 280px;">
-                <ion-card-content>
+
+        <ion-grid *ngIf="showProfilePlot">
+          <!-- <ion-row> -->
+            <!-- <ion-col size="10"> -->
+                <ion-card-content style="height: auto;">
                   <canvas baseChart [datasets]="datasets" [chartType]="'line'" [options]="chartOptions" [labels]="dataLabels"></canvas>
                 </ion-card-content>
-              </ion-card>
+            <!-- </ion-col> -->
+            <!-- <ion-col size="2" style="background-color:teal;">
+                <ngx-slider [(value)]="pressureValue" [options]="pressureValueOptions" (userChange)="onPressureChange($event)"></ngx-slider>
+              </ion-col> -->
+          <!-- </ion-row> -->
+          <!-- <ion-row style="height: 10%;">
+            <ion-col size="10" style="background-color: pink;">
+                <ngx-slider [(value)]="pressureIndex" [options]="pressureIndexOptions" (userChange)="onPressureIndexChange($event)"></ngx-slider>
             </ion-col>
-            <ion-col size="4">
-              <ion-card style="height: 280px;">
-                <ion-card-content style="align-content: center;">
-                  <ion-row>
-                  </ion-row>
-                  <ion-row style="padding-top: 5%">
-                    <ion-grid style="padding-right: 5%;">
-                      <ion-row>
-                        <ion-col>
-                        </ion-col>
-                        <ion-col (click)="adjustPressure('up')">
-                          <ion-icon name="arrow-up-circle-outline" style="font-size: 50px;"></ion-icon>
-                        </ion-col>
-                        <ion-col></ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col (click)="adjustPressure('left')">
-                          <ion-icon name="arrow-back-circle-outline" style="font-size: 50px;"></ion-icon>
-                        </ion-col>
-                        <ion-col>
-                        </ion-col>
-                        <ion-col (click)="adjustPressure('right')">
-                          <ion-icon name="arrow-forward-circle-outline" style="font-size: 50px;"></ion-icon>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col></ion-col>
-                        <ion-col (click)="adjustPressure('down')">
-                          <ion-icon name="arrow-down-circle-outline" style="font-size: 50px;"></ion-icon>
-                        </ion-col>
-                        <ion-col></ion-col>
-                      </ion-row>
-                    </ion-grid>
-                  </ion-row>
-                </ion-card-content>
-              </ion-card>
+            <ion-col>
+              <ion-icon name="arrow-back-outline" (click)="toggleProfilePlot()"></ion-icon>
             </ion-col>
-          </ion-row>
+            <ion-col style="background-color: powderblue;">
+              <ion-icon name="save-outline"></ion-icon>
+            </ion-col>
+          </ion-row> -->
         </ion-grid>
-      </ion-slide>
-    </ion-slides>
   </form>
 
   <form [formGroup]="profileForm" *ngIf="isEditMode">
@@ -172,12 +159,13 @@
     <ion-card >
       <mat-expansion-panel>
         <mat-expansion-panel-header collapsedHeight="60px">
-          <mat-panel-title style="padding-left: 20%">
+          <mat-panel-title></mat-panel-title>
+          <mat-panel-description style="margin: 0px;">
             <ion-item lines="none" class="ion-text-center">
               <ion-label position="stacked">Boiler Temperature</ion-label>
-              <ion-input formControlName="boilerTemperature" value="{{boiler.value}}" readonly style="color: gray; font-size: small;"></ion-input>
+              <ion-input formControlName="boilerTemperature" value="{{boiler.value}} °C" readonly style="color: gray; font-size: small;"></ion-input>
             </ion-item>
-          </mat-panel-title>
+          </mat-panel-description>
         </mat-expansion-panel-header>
         <ion-range min=80 max=100 step=1 #boiler>
           <ion-icon slot="start" size="small" name="thermometer"></ion-icon>
@@ -188,12 +176,47 @@
     <ion-card >
       <mat-expansion-panel>
         <mat-expansion-panel-header collapsedHeight="60px">
-          <mat-panel-title style="padding-left: 20%">
+          <mat-panel-title></mat-panel-title>
+          <mat-panel-description style="margin: 0px;">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Preinfusion Pressure</ion-label>
+              <ion-input formControlName="preinfusionPressure" value="{{preinfusionPressure.value}} Bar" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ion-range min=4 max=14 step=1 #preinfusionPressure>
+          <ion-icon slot="start"name="remove"></ion-icon>
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title></mat-panel-title>
+          <mat-panel-description style="margin: 0px;">
+            <ion-item lines="none" class="ion-text-center">
+              <ion-label position="stacked">Preinfusion Time</ion-label>
+              <ion-input formControlName="preInfusionTime" value="{{preInfusion.value}} s" readonly style="color: gray; font-size: small;"></ion-input>
+            </ion-item>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ion-range min=0 max=35 step=1 #preInfusion>
+          <ion-icon slot="start"name="remove"></ion-icon>
+          <ion-icon slot="end" name="add"></ion-icon>
+        </ion-range>
+      </mat-expansion-panel>
+    </ion-card>
+    <ion-card >
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="60px">
+          <mat-panel-title></mat-panel-title>
+          <mat-panel-description style="margin: 0px;">
             <ion-item lines="none" class="ion-text-center">
               <ion-label position="stacked">Pump Pressure</ion-label>
               <ion-input formControlName="pumpPressure" value="{{pump.value}} Bar" readonly style="color: gray; font-size: small;"></ion-input>
             </ion-item>
-          </mat-panel-title>
+          </mat-panel-description>
         </mat-expansion-panel-header>
         <ion-range min=4 max=14 step=1 #pump>
           <ion-icon slot="start"name="remove"></ion-icon>
@@ -204,29 +227,13 @@
     <ion-card >
       <mat-expansion-panel>
         <mat-expansion-panel-header collapsedHeight="60px">
-          <mat-panel-title style="padding-left: 20%;">
-            <ion-item lines="none" class="ion-text-center">
-              <ion-label position="stacked">Pre-Infusion</ion-label>
-              <ion-input formControlName="preInfusionTime" value="{{preInfusion.value}} s" readonly style="color: gray; font-size: small;"></ion-input>
-            </ion-item>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <ion-range min=0 max=35 step=1 #preInfusion>
-          <ion-icon slot="start"name="remove"></ion-icon>
-          <ion-icon slot="end" name="add"></ion-icon>
-        </ion-range>
-      </mat-expansion-panel>
-    </ion-card>
-    <ion-card >
-      <mat-expansion-panel>
-        <mat-expansion-panel-header collapsedHeight="60px">
-          <mat-panel-title style="padding-left: 20%;">
+          <mat-panel-title></mat-panel-title>
+          <mat-panel-description style="margin: 0px;">
             <ion-item lines="none" class="ion-text-center">
               <ion-label position="stacked">Shot Time</ion-label>
               <ion-input formControlName="shotTime" value="{{shot.value}} s" readonly style="color: gray; font-size: small;" required></ion-input>
             </ion-item>
-          </mat-panel-title>
+          </mat-panel-description>
         </mat-expansion-panel-header>
           <ion-range min=1 max=60 step=1 #shot>
             <ion-icon slot="start"name="remove"></ion-icon>

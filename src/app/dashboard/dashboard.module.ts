@@ -8,6 +8,9 @@ import { DashboardPageRoutingModule } from './dashboard-routing.module';
 
 import { DashboardPage } from './dashboard.page';
 import { ChartsModule } from 'ng2-charts';
+import { SliderModule } from 'primeng/slider';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
+
 
 @NgModule({
   imports: [
@@ -15,7 +18,9 @@ import { ChartsModule } from 'ng2-charts';
     FormsModule,
     IonicModule,
     DashboardPageRoutingModule,
-    ChartsModule
+    ChartsModule,
+    SliderModule,
+    NgxSliderModule
   ],
   declarations: [DashboardPage]
 })

@@ -31,7 +31,6 @@ export class BluetoothService implements OnDestroy {
   private heaterTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
   private pumpTuningPayloadCharacteristicID = '5b74e49a-e397-11eb-ba80-0242ac130004';
   private pumpCalibrationCharacteristicID = '57c1ff4f-c7b1-41ad-a58e-421e77fdbd37';
-  private togglePumpCalibrationCharacteristic = 'acbd6ca0-925f-4484-8471-f7c3f5e98ec1';
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
@@ -157,14 +156,16 @@ export class BluetoothService implements OnDestroy {
     this.togglePumpCalibrationMode('0');
   }
 
-  sendPumpPowerToDevice(reading: string) {
-    const dataToSend = "s:"+reading;
-    const payload = new TextEncoder().encode(dataToSend);
+  sendPumpPowerToDevice(pressureSetting: number, power: number) {
+    const transformedPressure = pressureSetting > 9 ? pressureSetting.toString() : "0" + pressureSetting.toString();
+    const transformedPower = power < 10 ? "00" + power.toString() : power < 99 ? "0" + power.toString() : power.toString();
+    console.log(`Sending power to device p:${transformedPressure}:${transformedPower}`);
+    const payload = new TextEncoder().encode("p:"+transformedPressure+":"+transformedPower);
 
     this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
-      console.log(`completed with response ${completed}`);
+      //console.log(`completed with response ${completed}`);
     }).catch(rejected => {
-      console.log(`failed with response ${rejected}`);
+      //console.log(`failed with response ${rejected}`);
     });
   }
 

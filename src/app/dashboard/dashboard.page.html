@@ -5,7 +5,7 @@
     <ion-row style="padding-top: 25px">
       <ion-col>
         <ion-card
-          style="height: 80px; align-content: space-around"
+          style="height: 80px; align-content: space-around; margin-bottom: 10px;"
           (click)="openBluetoothModal()"
         >
           <ion-card-content style="padding-top: 25px">
@@ -20,9 +20,9 @@
         </ion-card>
       </ion-col>
     </ion-row>
-    <ion-row style="align-content: space-around">
+    <ion-row style="align-content: space-around" no-padding>
       <ion-col>
-        <ion-card style="height: 80px;">
+        <ion-card style="height: 80px; margin-bottom: 10px;">
           <ion-row>
             <ion-col>
               <ion-icon
@@ -39,7 +39,7 @@
         </ion-card>
       </ion-col>
       <ion-col>
-        <ion-card style="height: 80px;">
+        <ion-card style="height: 80px; margin-bottom: 10px;">
           <ion-row>
             <ion-col>
               <ion-icon
@@ -68,12 +68,16 @@
           <p>{{currentProfile.boilerTemperature}} °C</p>
         </div>
         <div class="profile-item">
-          <p class="profile-label">Pump Pressure</p>
-          <p>{{currentProfile.pumpPressure}} Bar</p>
+          <p class="profile-label">Preinfusion Pressure</p>
+          <p>{{currentProfile.preinfusionPressure}} Bar</p>
         </div>
         <div class="profile-item">
-          <p class="profile-label">Pre Infusion Time</p>
+          <p class="profile-label">Preinfusion Time</p>
           <p>{{currentProfile.preInfusionTime}} s</p>
+        </div>
+        <div class="profile-item">
+          <p class="profile-label">Pump Pressure</p>
+          <p>{{currentProfile.pumpPressure}} Bar</p>
         </div>
         <div class="profile-item">
           <p class="profile-label">Shot Time</p>
@@ -88,11 +92,11 @@
         <ion-icon name="enter-outline"></ion-icon>
       </ion-card-content>
     </ion-card>
-
+<!-- 
     <ion-card (click)="openChartModal()">
       <ion-card-content>
         <ion-icon name="expand-outline"></ion-icon>
       </ion-card-content>
-    </ion-card>
+    </ion-card> -->
   </ion-grid>
 </ion-content>

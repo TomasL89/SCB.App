@@ -5,6 +5,60 @@
 
 <ion-content>
   <ion-card>
+    <ion-item>
+      <ion-label position="stacked">Pressure Point</ion-label>
+      <ion-input readonly="true" [(ngModel)]="pressureSetting"></ion-input>
+    </ion-item>
+  </ion-card>
+  <ion-card>
+    <ion-item>
+      <ion-label position="stacked">Pump Power (%)</ion-label>
+      <ion-input readonly="true" [(ngModel)]="pumpPowerSetting"></ion-input>
+    </ion-item>
+  </ion-card>
+  <ion-card style="padding-top: 40%;">
+    <ion-grid>
+      <ion-row>
+        <ion-col></ion-col>
+        <ion-col style="text-align: center;">
+          <ion-icon name="caret-up-outline" style="font-size: 60px;" (click)="increasePressure()"></ion-icon>
+        </ion-col>
+        <ion-col></ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="text-align: center;">
+          <ion-icon name="caret-back-outline" style="font-size: 60px" (click)="previousPressurePoint()"></ion-icon>
+        </ion-col>
+        <ion-col>
+        </ion-col>
+        <ion-col style="text-align: center;">
+          <ion-icon name="caret-forward-outline" style="font-size: 60px" (click)="nextPressurePoint()"></ion-icon>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col></ion-col>
+        <ion-col style="text-align: center;">
+          <ion-icon name="caret-down-outline" style="font-size: 60px;" (click)="decreasePressure()"></ion-icon>
+        </ion-col>
+        <ion-col></ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+        <ion-col></ion-col>
+        <ion-col style="text-align: center;">
+            <ion-icon name="save-outline" style="font-size: 40px;" (click)="finishCalibrationAndStore()"></ion-icon>
+        </ion-col>
+        <ion-col style="text-align: center;">
+          <ion-icon *ngIf="!isCalibrating" name="play-circle-outline" style="font-size: 40px;" (click)="toggleCalibrationMode()"></ion-icon>
+          <ion-icon *ngIf="isCalibrating" name="stop-circle-outline" style="font-size: 40px;" (click)="toggleCalibrationMode()"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+  <!-- <ion-card>
        <ion-item>
          <ion-label position="stacked">Pressure</ion-label>
          <ion-select value=1 placeholder="Select pressure" [(ngModel)]="pressureSetting" (ionChange)="updatePressureGuageReading()">
@@ -57,5 +111,5 @@
     <ion-item style="text-align: center;">
       <ion-icon name="save-outline" style="font-size: 60px;" (click)="finishCalibrationAndStore()"></ion-icon>
     </ion-item>
-  </ion-card>
+  </ion-card> -->
 </ion-content>

@@ -15,6 +15,8 @@ import { BLE } from '@ionic-native/ble/ngx';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { ChartsModule } from 'ng2-charts';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import { SliderModule } from 'primeng/slider';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   declarations: [AppComponent],
@@ -28,7 +30,9 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatExpansionModule,
-    ChartsModule
+    ChartsModule,
+    SliderModule,
+    NgxSliderModule
     ],
   providers: [
     {

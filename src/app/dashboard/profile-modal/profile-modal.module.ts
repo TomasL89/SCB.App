@@ -8,7 +8,8 @@ import { ProfileModalPageRoutingModule } from './profile-modal-routing.module';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProfileModalPage } from './profile-modal.page';
 import { ChartsModule } from 'ng2-charts';
-
+import { SliderModule } from 'primeng/slider';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 @NgModule({
   imports: [
     CommonModule,
@@ -17,7 +18,9 @@ import { ChartsModule } from 'ng2-charts';
     IonicModule,
     ProfileModalPageRoutingModule,
     MatExpansionModule,
-    ChartsModule
+    ChartsModule,
+    SliderModule,
+    NgxSliderModule
   ],
   declarations: [ProfileModalPage]
 })

@@ -3,6 +3,7 @@ export class Profile {
   name: string;
   boilerTemperature: number;
   pumpPressure: number;
+  preinfusionPressure: number;
   preInfusionTime: number;
   shotTime: number;
   selected: boolean;
@@ -12,6 +13,7 @@ export class Profile {
     name: string,
     boilerTemperature: number,
     pumpPressure: number,
+    preinfusionPressure: number,
     preInfusionTime: number,
     shotTime: number,
     selected: boolean
@@ -20,6 +22,7 @@ export class Profile {
     this.name = name;
     this.boilerTemperature = boilerTemperature;
     this.pumpPressure = pumpPressure;
+    this.preinfusionPressure = preinfusionPressure;
     this.preInfusionTime = preInfusionTime;
     this.shotTime = shotTime;
     this.selected = selected;
