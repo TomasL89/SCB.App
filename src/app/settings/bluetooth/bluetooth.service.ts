@@ -117,35 +117,66 @@ export class BluetoothService implements OnDestroy {
   }
 
   sendProfileToDevice(profile: Profile) {
-    const boilerTemp = profile.boilerTemperature;
-    const pumpPressure = profile.pumpPressure;
-    const preInfusionTime = profile.preInfusionTime;
-    const shotTime = profile.shotTime;
+    const boilerTemp = +profile.boilerTemperature;
+    const pumpPressure = +profile.pumpPressure;
+    const preinfusionTime = +profile.preInfusionTime;
+    const shotTime = +profile.shotTime;
+    const preinfusionPressure = +profile.preinfusionPressure;
 
     // need better validation and to alert the user
     if (boilerTemp <= 0 || boilerTemp === undefined) return;
     if (pumpPressure <= 0 || pumpPressure === undefined) return;
-    if (preInfusionTime < -1 || preInfusionTime === undefined) return;
+    if (preinfusionTime < -1 || preinfusionTime === undefined) return;
     if (shotTime <= 0 || shotTime === undefined) return;
+
+    const profilePayload = [];
+    profilePayload.push(boilerTemp);
+
+    // add preinfusion pressure points for each second
+    for (var i = 0; i < preinfusionTime; i++) {
+      profilePayload.push(preinfusionPressure);
+    }
+
+    for (var i = 0; i < shotTime; i++) {
+      profilePayload.push(pumpPressure);
+    }
+
+    // temperature + preinfusion (ie 10 seconds) + shot time (ie 20 seconds) = 31
+    const currentPoint = 1 + preinfusionTime + shotTime;
+    const remainingPoints = 60 - currentPoint;
+
+    for (var i = 0; i <= remainingPoints; i++) {
+      profilePayload.push(0);
+    }
+
+    const blePayload = new TextEncoder().encode(profilePayload.toString());
+
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId, this.profilePayloadCharacteristicId, blePayload.buffer).then(completed => {
+      console.log(`completed with response ${completed}`);
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    });
 
     //  private profilePrefixes = ['b:', 'p:', 'i:', 's:'];
 
-    const profileSettings = [
-      "b:" + boilerTemp,
-      pumpPressure < 10 ? "p:0" + pumpPressure : "p:" + pumpPressure,
-      preInfusionTime < 10 ? "i:0" + preInfusionTime : "i:" + preInfusionTime,
-      shotTime < 10 ? "s:0" + shotTime : "s:" + shotTime];
+    // const profileSettings = [
+    //   "b:" + boilerTemp,
+    //   pumpPressure < 10 ? "p:0" + pumpPressure : "p:" + pumpPressure,
+    //   preinfusionTime < 10 ? "i:0" + preinfusionTime : "i:" + preinfusionTime,
+    //   shotTime < 10 ? "s:0" + shotTime : "s:" + shotTime];
 
-    for (var i = 0; i < profileSettings.length; i++) {
+    // for (var i = 0; i < profileSettings.length; i++) {
 
-      let payload = new TextEncoder().encode(profileSettings[i]);
+    //   let payload = new TextEncoder().encode(profileSettings[i]);
 
-      this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.profilePayloadCharacteristicId, payload.buffer).then(completed => {
-        console.log(`completed with response ${completed}`);
-      }).catch(rejected => {
-        console.log(`failed with response ${rejected}`);
-      });
-    }
+    //   this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.profilePayloadCharacteristicId, payload.buffer).then(completed => {
+    //     console.log(`completed with response ${completed}`);
+    //   }).catch(rejected => {
+    //     console.log(`failed with response ${rejected}`);
+    //   });
+    // }
+
+
   }
 
   startPumpCalibrationMode() {
