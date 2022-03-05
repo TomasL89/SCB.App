@@ -9,6 +9,7 @@ import { DataPayload } from './bluetooth.data-payload.model';
 import { Profile } from 'src/app/profile/profile.model';
 import { BoilerPIDTuningDataPayload } from './boiler-pid.data-payload.model';
 import { PumpPIDTuningDataPayload } from './pump-pid.data-payload.model';
+import { BoardSettingsDataPayload } from './board-settings.data-payload.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,24 +18,28 @@ export class BluetoothService implements OnDestroy {
   platformReady: boolean;
   device: Subject<Device> = new Subject<Device>();
   isScanning: Subject<boolean> = new Subject<boolean>();
-  heartbeat: Subject<string> = new Subject<string>();
+  // heartbeat: Subject<string> = new Subject<string>();
   payload: Subject<DataPayload> = new Subject<DataPayload>();
   boilerTuningPayload: Subject<BoilerPIDTuningDataPayload> = new Subject<BoilerPIDTuningDataPayload>();
   pumpTuningPayload: Subject<PumpPIDTuningDataPayload> = new Subject<PumpPIDTuningDataPayload>();
+  boardSettings: Subject<BoardSettingsDataPayload> = new Subject<BoardSettingsDataPayload>();
 
   private settings: Settings;
   private deviceId = '';
   private serviceId = '090c9678-e397-11eb-ba80-0242ac130004';
-  private heartbeatCharacteristicId = '145b9574-e397-11eb-ba80-0242ac130004';
+  private boardSettingsCharacteristic = '145b9574-e397-11eb-ba80-0242ac130004';
   private dataPayloadCharacteristicId = '2e9eb0fa-e397-11eb-ba80-0242ac130004';
   private profilePayloadCharacteristicId = 'afe6a8da-e397-11eb-ba80-0242ac130004';
-  private heaterTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
+  //private heaterTuningPayloadCharacteristicId = 'fd045b94-e397-11eb-ba80-0242ac130004';
   private pumpTuningPayloadCharacteristicID = '5b74e49a-e397-11eb-ba80-0242ac130004';
   private pumpCalibrationCharacteristicID = '57c1ff4f-c7b1-41ad-a58e-421e77fdbd37';
+  private deviceFirmwareUpdateCharacteristicID = '8b75c8d5-e397-11eb-ba80-0242ac130004';
+
   private heartBeatSubscription: Subscription;
   private settingsSubscription: Subscription;
   private dataPayloadSubscription: Subscription;
   private pidTuningPayloadSubscription: Subscription;
+  private boardSettingsSubscription: Subscription;
   private isConnected: boolean;
 
   constructor(
@@ -86,18 +91,20 @@ export class BluetoothService implements OnDestroy {
   }
 
   startDataServices() {
+    // this.setupBoardSettingsNotifcations();
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
-    this.setupBoilerPidTuningNotifications();
-    this.setupPumpPidTuningNotifications();
+    //this.setupBoilerPidTuningNotifications();
+    //this.setupPumpPidTuningNotifications();
   }
 
 
   stopDataServices() {
-    this.ble.stopNotification(this.deviceId, this.serviceId ,this.heartbeatCharacteristicId);
+    this.ble.stopNotification(this.deviceId, this.serviceId ,this.boardSettingsCharacteristic);
     this.ble.stopNotification(this.deviceId, this.serviceId ,this.dataPayloadCharacteristicId);
+    // this.ble.startNotification(this.deviceId, this.serviceId, this.boardSettingsCharacteristicID);
     // todo this might need to be started up in a different way
-    this.ble.stopNotification(this.deviceId, this.serviceId, this.heaterTuningPayloadCharacteristicId);
+    //this.ble.stopNotification(this.deviceId, this.serviceId, this.heaterTuningPayloadCharacteristicId);
   }
 
   scanDevices() {
@@ -231,6 +238,19 @@ export class BluetoothService implements OnDestroy {
     }); 
   }
 
+  startFirmwareUpdate() {
+    const dataToSend = "1";
+
+    const payload = new TextEncoder().encode(dataToSend);
+    this.ble.writeWithoutResponse(this.deviceId, this.serviceId, this.deviceFirmwareUpdateCharacteristicID, payload.buffer).then(completed => {
+      console.log('Send start firmware update command');
+
+      
+    }).catch(rejected => {
+      console.log(`failed with response ${rejected}`);
+    })
+  }
+
   private togglePumpCalibrationMode(enabled: string) {
     const payload = new TextEncoder().encode(enabled);
     this.ble.writeWithoutResponse(this.deviceId, this.serviceId ,this.pumpCalibrationCharacteristicID, payload.buffer).then(completed => {
@@ -238,6 +258,8 @@ export class BluetoothService implements OnDestroy {
     }).catch(rejected => {
       console.log(`failed with response ${rejected}`);
     });
+
+
   }
 
   private async scanDevicesAsync() {
@@ -245,6 +267,7 @@ export class BluetoothService implements OnDestroy {
       this.isScanning.next(true);
       this.ble.scan([], 5).subscribe(
         (device) => {
+          
           const name = device['name'];
           const id = device['id'];
           if (name === 'Smart Coffee') {
@@ -261,6 +284,7 @@ export class BluetoothService implements OnDestroy {
         },
         () => {
           this.isScanning.next(false);
+       
         }
       );
       setTimeout(() => this.isScanning.next(false), 4000);
@@ -268,18 +292,17 @@ export class BluetoothService implements OnDestroy {
   }
 
   private setupHeartbeatNotifications() {
-    console.log(`HEARTBEAT DEVICE ID: ${this.deviceId}`);
     this.heartBeatSubscription = this.ble
       .startNotification(
         this.deviceId,
         this.serviceId,
-        this.heartbeatCharacteristicId
+        this.boardSettingsCharacteristic
       )
       .subscribe(
         (buffer) => {
-          var data = new Uint8Array(buffer);
-          var output = new TextDecoder().decode(data);
-          this.heartbeat.next(output);
+          var data = new Uint8Array(buffer[0]);
+          const boardSettingsPayload = new BoardSettingsDataPayload(`${data[0]}.${data[1]}`, data[2]); 
+          this.boardSettings.next(boardSettingsPayload);
         },
         (error) => {
           console.log('HEARTBEAT ERROR');
@@ -287,9 +310,32 @@ export class BluetoothService implements OnDestroy {
           if (this.heartBeatSubscription) {
             this.heartBeatSubscription.unsubscribe();
           }
-        }
+        },
       );
   }
+
+  // private setupBoardSettingsNotifcations() {
+  //   console.log("Starting setupBoardSettingsNotifcations setup");
+  //   this.boardSettingsSubscription = this.ble
+  //   .startNotification(
+  //     this.deviceId,
+  //     this.serviceId,
+  //     this.boardSettingsCharacteristicID
+  //   )
+  //   .subscribe(
+  //     (buffer) => {
+  //       console.log('got board setting payload');
+     
+  //     },
+  //     (error) => {
+  //       this.dataPayloadSubscription.unsubscribe();
+  //         console.log('BOARD DATA PAYLOAD ERROR');
+  //         console.log(error);
+  //         return false;
+  //     },
+  //   );
+  //   console.log("Finished setupBoardSettingsNotifcations setup");
+  // }
 
   private setupDataPayloadNotifications() {
     this.dataPayloadSubscription = this.ble
@@ -301,7 +347,6 @@ export class BluetoothService implements OnDestroy {
       .subscribe(
         (buffer) => {
           var data = new Uint8Array(buffer[0]);
-
           const cycleTime = data[0];
           const boilerTemp = data[1];
           const pumpPressure = data[2];
@@ -324,77 +369,77 @@ export class BluetoothService implements OnDestroy {
       );
   }
 
-   private setupBoilerPidTuningNotifications() {
-    this.ble
-      .startNotification(
-        this.deviceId,
-        this.serviceId,
-        this.heaterTuningPayloadCharacteristicId
-      )
-      .subscribe(
-        (buffer) => {
-          var data = new Uint8Array(buffer[0]);
-          const cycleTIme = data[0];
-          const boilerTemp = data[1];
-          const boilerTarget = data[2];
-          const dimmerPower = data[3];
-          const kp = data[4];
-          const ki = data[5];
-          const kd = data[6];
+  //  private setupBoilerPidTuningNotifications() {
+  //   this.ble
+  //     .startNotification(
+  //       this.deviceId,
+  //       this.serviceId,
+  //       this.heaterTuningPayloadCharacteristicId
+  //     )
+  //     .subscribe(
+  //       (buffer) => {
+  //         var data = new Uint8Array(buffer[0]);
+  //         const cycleTIme = data[0];
+  //         const boilerTemp = data[1];
+  //         const boilerTarget = data[2];
+  //         const dimmerPower = data[3];
+  //         const kp = data[4];
+  //         const ki = data[5];
+  //         const kd = data[6];
 
-          const payload = new BoilerPIDTuningDataPayload(
-            cycleTIme,
-            boilerTemp,
-            boilerTarget,
-            dimmerPower,
-            kp,
-            ki,
-            kd
-          );
-          this.boilerTuningPayload.next(payload);
-        },
-        (error) => {
-          console.log('PID TUNING PAYLOAD ERROR');
-          console.log(error);
-        }
-      );
-  }
+  //         const payload = new BoilerPIDTuningDataPayload(
+  //           cycleTIme,
+  //           boilerTemp,
+  //           boilerTarget,
+  //           dimmerPower,
+  //           kp,
+  //           ki,
+  //           kd
+  //         );
+  //         this.boilerTuningPayload.next(payload);
+  //       },
+  //       (error) => {
+  //         console.log('PID TUNING PAYLOAD ERROR');
+  //         console.log(error);
+  //       }
+  //     );
+  // }
 
-  private setupPumpPidTuningNotifications() {
-    this.ble
-      .startNotification(
-        this.deviceId,
-        this.serviceId,
-        this.pumpTuningPayloadCharacteristicID
-      )
-      .subscribe(
-        (buffer) => {
-          var data = new Uint8Array(buffer[0]);
-          const cycleTIme = data[0];
-          const pumpPressure = data[1];
-          const pumpPressureTarget = data[2];
-          const dimmerPower = data[3];
-          const kp = data[4];
-          const ki = data[5];
-          const kd = data[6];
+  // private setupPumpPidTuningNotifications() {
+  //   this.ble
+  //     .startNotification(
+  //       this.deviceId,
+  //       this.serviceId,
+  //       this.pumpTuningPayloadCharacteristicID
+  //     )
+  //     .subscribe(
+  //       (buffer) => {
+  //         var data = new Uint8Array(buffer[0]);
+  //         const cycleTIme = data[0];
+  //         const pumpPressure = data[1];
+  //         const pumpPressureTarget = data[2];
+  //         const dimmerPower = data[3];
+  //         const kp = data[4];
+  //         const ki = data[5];
+  //         const kd = data[6];
 
-          const payload = new PumpPIDTuningDataPayload(
-            cycleTIme,
-            pumpPressure,
-            pumpPressureTarget,
-            dimmerPower,
-            kp,
-            ki,
-            kd
-          );
-          this.pumpTuningPayload.next(payload);
-        },
-        (error) => {
-          console.log('PID TUNING PAYLOAD ERROR');
-          console.log(error);
-        }
-      );
-  }
+  //         const payload = new PumpPIDTuningDataPayload(
+  //           cycleTIme,
+  //           pumpPressure,
+  //           pumpPressureTarget,
+  //           dimmerPower,
+  //           kp,
+  //           ki,
+  //           kd
+  //         );
+  //         this.pumpTuningPayload.next(payload);
+  //       },
+  //       (error) => {
+  //         console.log('PID TUNING PAYLOAD ERROR');
+  //         console.log(error);
+  //       }
+  //     );
+  // }
 
   setupProfilePayloadNotifications() {
     this.ble.startNotification(this.deviceId, this.serviceId, this.profilePayloadCharacteristicId).subscribe(buffer => {
@@ -414,8 +459,8 @@ export class BluetoothService implements OnDestroy {
   private handleConnection() {
     this.setupHeartbeatNotifications();
     this.setupDataPayloadNotifications();
-    this.setupBoilerPidTuningNotifications();
-    this.setupPumpPidTuningNotifications();
+    //this.setupBoilerPidTuningNotifications();
+    //this.setupPumpPidTuningNotifications();
     this.isConnected = true;
     console.log(`Connected to Smart Coffee device: ${this.deviceId}`);
     this.device.next(new Device('Smart Coffee', this.deviceId));
@@ -425,7 +470,7 @@ export class BluetoothService implements OnDestroy {
     this.ble.stopNotification(
       this.deviceId,
       this.serviceId,
-      this.heartbeatCharacteristicId
+      this.boardSettingsCharacteristic
     );
     if (this.heartBeatSubscription) {
       this.heartBeatSubscription.unsubscribe();

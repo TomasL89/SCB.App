@@ -24,9 +24,8 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   payload: DataPayload;
 
   private scanningSubscription: Subscription;
-  private deviceSubscription: Subscription;
-  private heartbeatSubscription: Subscription;
   private payloadSubscription: Subscription;
+  private deviceSubscription: Subscription;
 
   constructor(
     private modalController: ModalController,
@@ -52,20 +51,20 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
         console.log(`ERROR IN BLUETOOTH MODAL ${error}`);
       }
     );
-    this.heartbeatSubscription = this.bluetoothService.heartbeat.subscribe(
-      (heartbeat) => {
-        this.zone.run(
-          () => {
-            this.heartbeat = heartbeat;
-          },
-          (error) => {
-            console.log(`Got an error: ${error}`);
-          }
-        );
-      }, error => {
-        console.log(`ERROR WITH BLUETOOTH HEARTBEAT SUB ${error}`);
-      }
-    );
+    // this.heartbeatSubscription = this.bluetoothService.heartbeat.subscribe(
+    //   (heartbeat) => {
+    //     this.zone.run(
+    //       () => {
+    //         this.heartbeat = heartbeat;
+    //       },
+    //       (error) => {
+    //         console.log(`Got an error: ${error}`);
+    //       }
+    //     );
+    //   }, error => {
+    //     console.log(`ERROR WITH BLUETOOTH HEARTBEAT SUB ${error}`);
+    //   }
+    // );
     this.payloadSubscription = this.bluetoothService.payload.subscribe(payload => {
       this.zone.run(() => {
         this.payload = payload;
@@ -99,7 +98,7 @@ export class BluetoothModalPage implements AfterViewInit, OnInit {
   dismiss() {
     this.bluetoothService.stopScan();
     this.scanningSubscription.unsubscribe();
-    this.heartbeatSubscription.unsubscribe();
+    // this.heartbeatSubscription.unsubscribe();
     this.payloadSubscription.unsubscribe();
     this.modalController.dismiss();
   }

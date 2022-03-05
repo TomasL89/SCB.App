@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon name="arrow-back-outline" (click)="dismiss()" class="ion-padding" style="float: left; font-size: 30px;"></ion-icon>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card (click)="navigateToWiFiSettings()">
+    <ion-card-content >
+      <div class="ion-text-center">
+        <p>Connect to SCB via WiFi Settings<ion-icon name="settings-outline"></ion-icon></p>
+      </div>
+      <!-- <ion-progress-bar *ngIf="connectingToAccessPoint" type="indeterminate"></ion-progress-bar> -->
+    </ion-card-content>
+  </ion-card>
+  <!-- <ion-card *ngIf="connectedToAccessPoint"> -->
+    <form [formGroup]="wiFiConnectionForm">
+      <ion-card (click)="scanWiFiNetworks()">
+        <ion-card-content>
+          <div class="ion-text-center" *ngIf="!scanningForWiFiNetworks">
+            <p>Scan for Wi-Fi networks<ion-icon name="refresh-outline" slot="middle"></ion-icon></p>
+          </div>
+          <div class="ion-text-center" *ngIf="scanningForWiFiNetworks">
+            <ion-progress-bar type="indeterminate"></ion-progress-bar>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+        <ion-card-content>
+          <ion-item lines="none" *ngIf="networks == undefined">
+            <ion-label position="stacked">SSID</ion-label>
+            <ion-input placeholder="WiFi Network Name" formControlName="ssid"></ion-input>
+          </ion-item>
+          <ion-item lines="none" *ngIf="networks">
+            <ion-label position="stacked">SSID</ion-label>
+            <ion-select placeholder="Select SSID" [(ngModel)]="selectedSSID" formControlName="ssid">
+              <ion-select-option *ngFor="let network of networks">{{network}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">WiFi Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-button slot="end" (click)="connectToWiFi()">Connect</ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </form>
+  </ion-content>
+ 

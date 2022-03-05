@@ -17,6 +17,9 @@ import { ChartsModule } from 'ng2-charts';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { SliderModule } from 'primeng/slider';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { HttpClientModule } from '@angular/common/http';
+import { OpenNativeSettings } from '@awesome-cordova-plugins/open-native-settings/ngx';
+import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,7 +35,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     MatExpansionModule,
     ChartsModule,
     SliderModule,
-    NgxSliderModule
+    NgxSliderModule,
+    HttpClientModule
     ],
   providers: [
     {
@@ -43,7 +47,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     SettingsService,
     BLE,
     AppVersion,
-    ScreenOrientation
+    ScreenOrientation,
+    OpenNativeSettings,
+    HTTP
     ],
   bootstrap: [AppComponent],
 })

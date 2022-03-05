@@ -1,24 +1,17 @@
 <ion-header [translate]="true">
 </ion-header>
 <ion-content>
-  <!-- <ion-card (click)="openBluetoothModal()">
+  <ion-card (click)="openWifiModal()">
     <ion-card-content>
       <div class="ion-text-center">
-        <p>Smart Coffee Device <ion-icon name="bluetooth-outline" slot="end" [color]='device ? "dark": "danger"'></ion-icon></p>
-      </div>
-    </ion-card-content>
-  </ion-card> -->
-  <ion-card>
-    <ion-card-content>
-      <div class="ion-text-center">
-        <p>Firmware V{{firmwareVersion | number : '1.1-1'}} <ion-icon name="hardware-chip-outline" slot="end"></ion-icon></p>
+        <p>Internet <ion-icon name="wifi-outline" slot="end" [color]='wifiConnected===true ? "success" : "danger"'></ion-icon></p>
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card>
+  <ion-card (click)="openPowerModal()">
     <ion-card-content>
       <div class="ion-text-center">
-        <p>App V{{appVersion | number : '1.1-1'}} <ion-icon name="square-outline" slot="end"></ion-icon></p>
+        <p>Economy Mode <ion-icon name="leaf-outline" slot="end" [color]='economyModeOn===true ? "success" : "dark"'></ion-icon></p>
       </div>
     </ion-card-content>
   </ion-card>
@@ -29,10 +22,24 @@
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card (click)="openPowerModal()">
+  <!-- <ion-card (click)="openBluetoothModal()">
     <ion-card-content>
       <div class="ion-text-center">
-        <p>Economy Mode <ion-icon name="leaf-outline" slot="end" [color]='economyModeOn===true ? "success" : "dark"'></ion-icon></p>
+        <p>Smart Coffee Device <ion-icon name="bluetooth-outline" slot="end" [color]='device ? "dark": "danger"'></ion-icon></p>
+      </div>
+    </ion-card-content>
+  </ion-card> -->
+  <ion-card (click)="openFirmwareUpdateModal()">
+    <ion-card-content>
+      <div class="ion-text-center">
+      <p>Firmware V{{firmwareVersion | number : '1.1-1'}} <ion-icon name="hardware-chip-outline" slot="end"></ion-icon><ion-badge color="warning" *ngIf="firmwareUpdateAvailable">!</ion-badge></p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <p>App V{{appVersion | number : '1.1-1'}} <ion-icon name="square-outline" slot="end"></ion-icon></p>
       </div>
     </ion-card-content>
   </ion-card>

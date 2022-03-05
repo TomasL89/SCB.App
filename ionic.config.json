@@ -3,5 +3,9 @@
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "proxies": [{
+    "path": "/api",
+    "proxyUrl": "https://192.168.4.1:443"
+  }]
 }

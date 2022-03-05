@@ -15,6 +15,14 @@ const routes: Routes = [
   {
     path: 'power-modal',
     loadChildren: () => import('./power/power-modal/power-modal.module').then( m => m.PowerModalPageModule)
+  },
+  {
+    path: 'wifi-modal',
+    loadChildren: () => import('./modals/wifi-modal/wifi-modal.module').then( m => m.WifiModalPageModule)
+  },
+  {
+    path: 'firmware-update-modal',
+    loadChildren: () => import('./modals/firmware-update-modal/firmware-update-modal.module').then( m => m.FirmwareUpdateModalPageModule)
   }
 ];
 
