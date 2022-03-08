@@ -11,8 +11,7 @@
       <ion-item *ngIf="firmwareInfo" lines="none">
         <ion-label position="stacked">Firmware Version</ion-label>
         <ion-select 
-          [(ngModel)]="selectedFirmwareVersion"
-          (ionChange)="logSelectedItem()">
+          [(ngModel)]="selectedFirmwareVersion">
           <ion-select-option 
             *ngFor="let fwVersion of firmwareInfo"
             [value]="fwVersion"

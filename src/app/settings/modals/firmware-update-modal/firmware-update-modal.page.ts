@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { Readable } from 'stream';
+import { ModalController, Platform } from '@ionic/angular';
 import { AzureStorageService } from '../../azure-storage/azure-storage.service.service';
 import { BluetoothService } from '../../bluetooth/bluetooth.service';
 import { Version } from './firmware-info.model';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
   selector: 'app-firmware-update-modal',
@@ -13,6 +13,10 @@ import { Version } from './firmware-info.model';
 export class FirmwareUpdateModalPage implements OnInit {
 
   private fwManifest = "scb-fw-info.json";
+  // todo change the name of this as it really reads as smart coffee board board (scb-board)
+  private boardHostName = "scb-board:81";
+  private tmpdir = "tmp/fw/"
+  private progressSubject = webSocket("ws://scb-board:81/ws");
 
   selectedFirmwareVersion: Version;
   //firmwareInfo: any;
@@ -22,7 +26,14 @@ export class FirmwareUpdateModalPage implements OnInit {
   constructor(
     private modalController: ModalController,
     private bluetoothService: BluetoothService,
-    private blobService: AzureStorageService) { }
+    private blobService: AzureStorageService,
+    private platform: Platform) {
+      this.platform.ready().then((ready) => {
+        this.progressSubject.subscribe((data) => {
+          console.log(`Progress: ${data}`);
+        })
+      })
+     }
 
   ngOnInit() {
     this.downloadFwVersionManifest();
@@ -30,24 +41,14 @@ export class FirmwareUpdateModalPage implements OnInit {
 
   updateDeviceFirmware() {
     this.bluetoothService.startFirmwareUpdate();
+
+    console.log('Downloading blob');
+    this.blobService.downloadFw(this.selectedFirmwareVersion.uri);
+    console.log('Finished downloading blob');
   }
 
   dismiss() {
     this.modalController.dismiss();
-  }
-
-  logSelectedItem() {
-    // this.selectedFirmwareVersion = this.firmwareInfo.filter.find(e => e.version === this.selectedFirmwareVersion);
-    // //console.log(this.selectedFirmwareVersionData);
-    // this.selectedFirmwareVersion = new Version(
-    //   this.selectedFirmwareVersionData.Version,
-    //   this.selectedFirmwareVersionData.ReleaseDate,
-    //   this.selectedFirmwareVersionData.URI,
-    //   this.selectedFirmwareVersionData.Features,
-    //   this.selectedFirmwareVersionData.BugFixes
-    // );
-    console.log(this.selectedFirmwareVersionData);
-
   }
 
   private async downloadFwVersionManifest() {

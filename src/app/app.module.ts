@@ -20,7 +20,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { HttpClientModule } from '@angular/common/http';
 import { OpenNativeSettings } from '@awesome-cordova-plugins/open-native-settings/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
-
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -49,7 +50,9 @@ import { HTTP } from '@awesome-cordova-plugins/http/ngx';
     AppVersion,
     ScreenOrientation,
     OpenNativeSettings,
-    HTTP
+    HTTP,
+    FileOpener,
+    File
     ],
   bootstrap: [AppComponent],
 })

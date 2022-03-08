@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ export class AzureStorageService {
 
   private containerName = 'scb-fw-info';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   // todo rename this
   public async listFwVersions(): Promise<string[]> {
@@ -33,9 +34,31 @@ export class AzureStorageService {
     })
   }
 
-  private containerClient(): ContainerClient {
-    return new BlobServiceClient('https://scbfw.blob.core.windows.net')
-      .getContainerClient(this.containerName);
-  }
+public async downloadFw(name: string) {
+
+    const response = await fetch(name);
+    const bufferBlob = await response.blob();
+    const formData = new FormData();
+    formData.append('fw', bufferBlob);
+
+    this.http.post('http://scb-board:81/update', formData).subscribe((response) => {
+      console.log(`Response: ${response}`);
+    }, (error) => {
+      console.log(`Error: ${error}`);
+    });
 }
-// https://scbfw.blob.core.windows.net/scb-fw-info/scb-fw-info.json
+
+private containerClient(): ContainerClient {
+  return new BlobServiceClient('https://scbfw.blob.core.windows.net')
+    .getContainerClient(this.containerName);
+}
+
+async streamToText(readable) {
+  readable.setEncoding('utf8');
+  let data = '';
+  for await(const chunk of readable) {
+    data += chunk;
+  }
+  return data;
+}
+}

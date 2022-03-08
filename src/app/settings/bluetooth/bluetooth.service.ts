@@ -23,6 +23,7 @@ export class BluetoothService implements OnDestroy {
   boilerTuningPayload: Subject<BoilerPIDTuningDataPayload> = new Subject<BoilerPIDTuningDataPayload>();
   pumpTuningPayload: Subject<PumpPIDTuningDataPayload> = new Subject<PumpPIDTuningDataPayload>();
   boardSettings: Subject<BoardSettingsDataPayload> = new Subject<BoardSettingsDataPayload>();
+  firmwareUpdatePayload: Subject<number> = new Subject<number>();
 
   private settings: Settings;
   private deviceId = '';
@@ -40,6 +41,7 @@ export class BluetoothService implements OnDestroy {
   private dataPayloadSubscription: Subscription;
   private pidTuningPayloadSubscription: Subscription;
   private boardSettingsSubscription: Subscription;
+  private firmwareUpdateSubscription: Subscription;
   private isConnected: boolean;
 
   constructor(
@@ -244,7 +246,7 @@ export class BluetoothService implements OnDestroy {
     const payload = new TextEncoder().encode(dataToSend);
     this.ble.writeWithoutResponse(this.deviceId, this.serviceId, this.deviceFirmwareUpdateCharacteristicID, payload.buffer).then(completed => {
       console.log('Send start firmware update command');
-
+      this.setupFirmwareUpdatePayloadNotifications
       
     }).catch(rejected => {
       console.log(`failed with response ${rejected}`);
@@ -362,6 +364,31 @@ export class BluetoothService implements OnDestroy {
         },
         (error) => {
           this.dataPayloadSubscription.unsubscribe();
+          console.log('DATA PAYLOAD ERROR');
+          console.log(error);
+          return false;
+        }
+      );
+  }
+
+  private setupFirmwareUpdatePayloadNotifications() {
+    this.firmwareUpdateSubscription = this.ble
+      .startNotification(
+        this.deviceId,
+        this.serviceId,
+        this.deviceFirmwareUpdateCharacteristicID
+      )
+      .subscribe(
+        (buffer) => {
+          var data = new Uint8Array(buffer[0]);
+          const progress = data[0];
+
+          
+          this.firmwareUpdatePayload.next(progress);
+          console.log(`Progress: ${progress} %`);
+        },
+        (error) => {
+          this.firmwareUpdateSubscription.unsubscribe();
           console.log('DATA PAYLOAD ERROR');
           console.log(error);
           return false;
